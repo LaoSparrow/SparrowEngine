@@ -1,10 +1,12 @@
 #pragma once
 
 #include "behavior.hpp"
+#include "transform.hpp"
 
 #include <list>
 #include <memory>
 #include <string>
+#include <functional>
 
 namespace SparrowEngine {
 
@@ -12,19 +14,19 @@ namespace SparrowEngine {
     private:
 
         void inline start_behaviors() {
-            for (auto &s: scripts) {
+            for (auto &s: behaviors) {
                 s->start();
             }
         }
 
         void inline update_behaviors() {
-            for (auto &s: scripts) {
+            for (auto &s: behaviors) {
                 s->update();
             }
         }
 
         void inline render_behaviors() {
-            for (auto &s: scripts) {
+            for (auto &s: behaviors) {
                 s->render();
             }
         }
@@ -48,9 +50,10 @@ namespace SparrowEngine {
         }
 
     public:
-        std::string name;
+        std::string name = "Game Object";
         std::list<std::shared_ptr<GameObject>> children;
-        std::list<std::shared_ptr<Behavior>> scripts;
+        std::list<std::shared_ptr<Behavior>> behaviors;
+        Transform transform;
 
         GameObject() = default;
         explicit GameObject(std::string name);
@@ -63,11 +66,43 @@ namespace SparrowEngine {
 
         template<class BehaviorT, class ...Args>
         std::shared_ptr<GameObject> add_component(Args... args) {
-            scripts.emplace_back(std::make_shared<BehaviorT>(
-                std::weak_ptr<GameObject>(shared_from_this()),
+            behaviors.emplace_back(std::make_shared<BehaviorT>(
+                weak_from_this(),
                 args...));
             return shared_from_this();
         }
+
+        template<class BehaviorT>
+        std::shared_ptr<GameObject> configure_component(std::function<void(std::shared_ptr<BehaviorT>)> options) {
+            options(std::static_pointer_cast<BehaviorT>(behaviors.back()));
+            return shared_from_this();
+        }
+
+        std::shared_ptr<GameObject> configure_object(std::function<void(std::shared_ptr<GameObject>)> options);
     };
+
+    GameObject::GameObject(std::string name) : name(name) {
+
+    }
+
+    void GameObject::start() {
+        start_behaviors();
+        start_children();
+    }
+
+    void GameObject::update() {
+        update_behaviors();
+        update_children();
+    }
+
+    void GameObject::render() {
+        render_behaviors();
+        render_children();
+    }
+
+    std::shared_ptr<GameObject> GameObject::configure_object(std::function<void(std::shared_ptr<GameObject>)> options) {
+        options(shared_from_this());
+        return shared_from_this();
+    }
 
 }

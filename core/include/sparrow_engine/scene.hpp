@@ -13,8 +13,31 @@ namespace SparrowEngine {
     public:
         GameObject scene_root;
 
-        void update();
-        void render();
+        void new_frame();
+
+        virtual void start();
+        virtual void update();
+        virtual void render();
     };
+
+    void Scene::new_frame() {
+        if (!is_started) {
+            is_started = true;
+            start();
+        }
+        update();
+    }
+
+    void Scene::start() {
+        scene_root.start();
+    }
+
+    void Scene::update() {
+        scene_root.update();
+    }
+
+    void Scene::render() {
+        scene_root.render();
+    }
 
 }
