@@ -3,7 +3,9 @@ project(SparrowEngine.Example)
 
 add_executable(SparrowEngine.Example src/main.cpp
         src/scenes/scene1.hpp
-        src/scripts/camera_movement.hpp)
+        src/scripts/camera_movement.hpp
+        src/scenes/scene2.hpp
+        src/constants.hpp)
 
 find_package(glad CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE glad::glad)

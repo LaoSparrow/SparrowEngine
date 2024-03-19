@@ -2,6 +2,7 @@
 #include "sparrow_engine/game_window.hpp"
 
 #include "scenes/scene1.hpp"
+#include "scenes/scene2.hpp"
 
 
 int main() {
@@ -11,7 +12,7 @@ int main() {
                                               .minor_version = 5,
                                           }
                                       });
-    SparrowEngine::GameWindow window("Engine Example");
+    SparrowEngine::GameWindow window("Engine Example", 1920, 1080);
 
     auto scene = std::make_shared<Scene1>();
     window.bind_scene(scene);

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <utility>
 
 namespace SparrowEngine {
 
@@ -51,12 +52,15 @@ namespace SparrowEngine {
 
     public:
         std::string name = "Game Object";
+        std::weak_ptr<GameObject> parent;
         std::list<std::shared_ptr<GameObject>> children;
         std::list<std::shared_ptr<Behavior>> behaviors;
         Transform transform;
 
         GameObject() = default;
+
         explicit GameObject(std::string name);
+        explicit GameObject(std::weak_ptr<GameObject> parent, std::string name);
 
         virtual void start();
 
@@ -78,10 +82,32 @@ namespace SparrowEngine {
             return shared_from_this();
         }
 
+        template<class ...Args>
+        std::shared_ptr<GameObject> add_child_object(Args... args) {
+            children.emplace_back(std::make_shared<GameObject>(
+                weak_from_this(),
+                args...
+                ));
+            return shared_from_this();
+        }
+
+        std::shared_ptr<GameObject> configure_child_object(std::function<void(std::shared_ptr<GameObject>)> options) {
+            options(std::static_pointer_cast<GameObject>(children.back()));
+            return shared_from_this();
+        }
+
         std::shared_ptr<GameObject> configure_object(std::function<void(std::shared_ptr<GameObject>)> options);
+
+        glm::mat4 get_model_matrix_in_global();
     };
 
-    GameObject::GameObject(std::string name) : name(name) {
+    GameObject::GameObject(std::string name) : name(std::move(name)) {
+
+    }
+
+    GameObject::GameObject(std::weak_ptr<GameObject> parent, std::string name)
+    : name(std::move(name)),
+      parent(std::move(parent)){
 
     }
 
@@ -103,6 +129,23 @@ namespace SparrowEngine {
     std::shared_ptr<GameObject> GameObject::configure_object(std::function<void(std::shared_ptr<GameObject>)> options) {
         options(shared_from_this());
         return shared_from_this();
+    }
+
+    glm::mat4 GameObject::get_model_matrix_in_global() {
+        glm::mat4 model;
+        auto obj = parent.lock();
+        if (obj)
+            model = obj->get_model_matrix_in_global();
+        else
+            model = glm::mat4(1.0f);
+
+        model = glm::translate(model, transform.position);
+        model = glm::rotate(model, glm::radians(transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, transform.scale);
+
+        return model;
     }
 
 }

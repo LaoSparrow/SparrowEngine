@@ -9,6 +9,7 @@
 #include "sparrow_engine/components/camera.hpp"
 
 #include "../scripts/camera_movement.hpp"
+#include "../constants.hpp"
 
 #include <iostream>
 
@@ -43,21 +44,13 @@ public:
 class Scene1 : public SparrowEngine::Scene {
     void start() override {
 //        scene_root.children.emplace_back(std::make_shared<BackgroundObject>());
+        using Mesh = SparrowEngine::Components::Mesh;
         scene_root.children.emplace_back(
             std::make_shared<SparrowEngine::GameObject>("Plane")
                 ->add_component<TransformModification>()
-                ->add_component<SparrowEngine::Components::Mesh,
-                    std::initializer_list<SparrowEngine::Components::MeshData>,
-                    std::initializer_list<unsigned int>>(
-                    {
-                        {{0.5f,  0.5f,  0.0f}, {1.0f, 1.0f}},   // 右上
-                        {{0.5f,  -0.5f, 0.0f}, {1.0f, 0.0f}},   // 右下
-                        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},   // 左下
-                        {{-0.5f, 0.5f,  0.0f}, {0.0f, 1.0f}}    // 左上
-                    }, {
-                        0, 1, 3, // 第一个三角形
-                        1, 2, 3  // 第二个三角形
-                    })
+                ->add_component<SparrowEngine::Components::Mesh>(
+                    SparrowEngine::Example::Constants::plane,
+                    SparrowEngine::Example::Constants::plane_vertex_indices)
                 ->configure_component<SparrowEngine::Components::Mesh>([](auto m) -> void {
                     m->use_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl")
                         ->set_texture(0, "../example/textures/container.jpg")
@@ -67,55 +60,26 @@ class Scene1 : public SparrowEngine::Scene {
         scene_root.children.emplace_back(
             std::make_shared<SparrowEngine::GameObject>("Cube")
                 ->add_component<TransformModification>()
-                ->add_component<SparrowEngine::Components::Mesh,
-                    std::initializer_list<SparrowEngine::Components::MeshData>>(
-                    {
-                        {{-0.5f, -0.5f, -0.5f},  {0.0f, 0.0f}},
-                        {{ 0.5f, -0.5f, -0.5f},  {1.0f, 0.0f}},
-                        {{ 0.5f,  0.5f, -0.5f},  {1.0f, 1.0f}},
-                        {{ 0.5f,  0.5f, -0.5f},  {1.0f, 1.0f}},
-                        {{-0.5f,  0.5f, -0.5f},  {0.0f, 1.0f}},
-                        {{-0.5f, -0.5f, -0.5f},  {0.0f, 0.0f}},
-
-                        {{-0.5f, -0.5f,  0.5f},  {0.0f, 0.0f}},
-                        {{ 0.5f, -0.5f,  0.5f},  {1.0f, 0.0f}},
-                        {{ 0.5f,  0.5f,  0.5f},  {1.0f, 1.0f}},
-                        {{ 0.5f,  0.5f,  0.5f},  {1.0f, 1.0f}},
-                        {{-0.5f,  0.5f,  0.5f},  {0.0f, 1.0f}},
-                        {{-0.5f, -0.5f,  0.5f},  {0.0f, 0.0f}},
-
-                        {{-0.5f,  0.5f,  0.5f},  {1.0f, 0.0f}},
-                        {{-0.5f,  0.5f, -0.5f},  {1.0f, 1.0f}},
-                        {{-0.5f, -0.5f, -0.5f},  {0.0f, 1.0f}},
-                        {{-0.5f, -0.5f, -0.5f},  {0.0f, 1.0f}},
-                        {{-0.5f, -0.5f,  0.5f},  {0.0f, 0.0f}},
-                        {{-0.5f,  0.5f,  0.5f},  {1.0f, 0.0f}},
-
-                        {{ 0.5f,  0.5f,  0.5f},  {1.0f, 0.0f}},
-                        {{ 0.5f,  0.5f, -0.5f},  {1.0f, 1.0f}},
-                        {{ 0.5f, -0.5f, -0.5f},  {0.0f, 1.0f}},
-                        {{ 0.5f, -0.5f, -0.5f},  {0.0f, 1.0f}},
-                        {{ 0.5f, -0.5f,  0.5f},  {0.0f, 0.0f}},
-                        {{ 0.5f,  0.5f,  0.5f},  {1.0f, 0.0f}},
-
-                        {{-0.5f, -0.5f, -0.5f},  {0.0f, 1.0f}},
-                        {{ 0.5f, -0.5f, -0.5f},  {1.0f, 1.0f}},
-                        {{ 0.5f, -0.5f,  0.5f},  {1.0f, 0.0f}},
-                        {{ 0.5f, -0.5f,  0.5f},  {1.0f, 0.0f}},
-                        {{-0.5f, -0.5f,  0.5f},  {0.0f, 0.0f}},
-                        {{-0.5f, -0.5f, -0.5f},  {0.0f, 1.0f}},
-
-                        {{-0.5f,  0.5f, -0.5f},  {0.0f, 1.0f}},
-                        {{ 0.5f,  0.5f, -0.5f},  {1.0f, 1.0f}},
-                        {{ 0.5f,  0.5f,  0.5f},  {1.0f, 0.0f}},
-                        {{ 0.5f,  0.5f,  0.5f},  {1.0f, 0.0f}},
-                        {{-0.5f,  0.5f,  0.5f},  {0.0f, 0.0f}},
-                        {{-0.5f,  0.5f, -0.5f},  {0.0f, 1.0f}}
-                    })
+                ->add_component<SparrowEngine::Components::Mesh>(
+                    SparrowEngine::Example::Constants::cube)
                 ->configure_component<SparrowEngine::Components::Mesh>([](auto m) -> void {
                     m->use_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl")
                         ->set_texture(0, "../example/textures/container.jpg")
                         ->set_texture(1, "../example/textures/awesomeface.png");
+                })
+
+                ->add_child_object("Cube child")
+                ->configure_child_object([](auto obj) -> void {
+                    obj->transform.position = glm::vec3(1.0f, 1.0f, 0.0f);
+                    obj->transform.rotation = glm::vec3(0.0f, 45.0f, 0.0f);
+                    obj->add_component<TransformModification>();
+                    obj->add_component<Mesh>(
+                        SparrowEngine::Example::Constants::cube);
+                    obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) -> void {
+                        m->use_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl")
+                            ->set_texture(0, "../example/textures/container.jpg")
+                            ->set_texture(1, "../example/textures/awesomeface.png");
+                    });
                 })
         );
         scene_root.children.emplace_back(
@@ -123,11 +87,21 @@ class Scene1 : public SparrowEngine::Scene {
                 ->configure_object([](auto o) -> void {
                     o->transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
                 })
-//                ->add_component<TransformModification>()
+                ->add_component<TransformModification>()
                 ->add_component<SparrowEngine::Components::Camera>()
                 ->add_component<CameraMovement>()
         );
-
+//        scene_root.children.emplace_back(
+//            std::make_shared<SparrowEngine::GameObject>("Camera Parent")
+//                ->add_component<TransformModification>()
+//
+//                ->add_child_object("Camera Object")
+//                ->configure_child_object([](auto cam) -> void {
+//                    cam->transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
+//                    cam->add_component<SparrowEngine::Components::Camera>();
+//                    cam->add_component<CameraMovement>();
+//                })
+//        );
         Scene::start();
     }
 

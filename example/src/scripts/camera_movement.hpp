@@ -23,7 +23,7 @@ public:
         GLFWwindow *w = SparrowEngine::GameWindow::GetCurrentActiveWindow()->glfw_window;
         auto parent = game_object.lock();
         glm::vec3 front;
-        front.x =  sin(glm::radians(parent->transform.rotation.y)) * cos(glm::radians(parent->transform.rotation.x));
+        front.x = -sin(glm::radians(parent->transform.rotation.y)) * cos(glm::radians(parent->transform.rotation.x));
         front.y =  sin(glm::radians(parent->transform.rotation.x));
         front.z = -cos(glm::radians(parent->transform.rotation.y)) * cos(glm::radians(parent->transform.rotation.x));
         front = glm::normalize(front);
@@ -60,7 +60,7 @@ public:
         if (is_cursor_disabled) {
             double cursor_x, cursor_y;
             glfwGetCursorPos(w, &cursor_x, &cursor_y);
-            float offset_x = cursor_x - last_cursor_x;
+            float offset_x = last_cursor_x - cursor_x;
             float offset_y = last_cursor_y - cursor_y;
             last_cursor_x = cursor_x;
             last_cursor_y = cursor_y;

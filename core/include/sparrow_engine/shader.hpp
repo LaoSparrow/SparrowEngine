@@ -1,6 +1,8 @@
 #pragma once
 
 #include "texture.hpp"
+#include "transform.hpp"
+#include "game_window.hpp"
 
 #include "glad/glad.h"
 
@@ -38,10 +40,12 @@ namespace SparrowEngine {
 
         void initialize(const char *vertex_path, const char* fragment_path);
         void load_texture(unsigned int slot, std::string &image_path);
-        void push_mats(Transform model_transform = Transform());
+        void push_mats(Transform model_transform);
+        void push_mats(glm::mat4 model_matrix = glm::mat4(1.0f));
         void use();
 
         void set_int(const char *name, int value);
+        void set_vec3(const char *name, glm::vec3 value);
         void set_mat4(const char *name, glm::mat4 &value);
     };
 
@@ -181,6 +185,11 @@ namespace SparrowEngine {
         glUniform1i(glGetUniformLocation(id, name), value);
     }
 
+    void Shader::set_vec3(const char *name, glm::vec3 value) {
+        use();
+        glUniform3fv(glGetUniformLocation(id, name), 1, glm::value_ptr(value));
+    }
+
     void Shader::set_mat4(const char *name, glm::mat4 &value) {
         use();
         glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(value));
@@ -203,4 +212,15 @@ namespace SparrowEngine {
         }
     }
 
+    void Shader::push_mats(glm::mat4 model_matrix) {
+        use();
+        GameWindow *w = GameWindow::GetCurrentActiveWindow();
+        if (is_projection_present)
+            set_mat4("projection", w->mat_projection);
+        if (is_view_present)
+            set_mat4("view", w->mat_view);
+        if (is_model_present) {
+            set_mat4("model", model_matrix);
+        }
+    }
 }

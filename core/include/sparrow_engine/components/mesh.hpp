@@ -15,6 +15,7 @@ namespace SparrowEngine::Components {
 
     struct MeshData {
         glm::vec3 position;
+        glm::vec3 normal;
         glm::vec2 texture_coordinate;
     };
 
@@ -24,14 +25,14 @@ namespace SparrowEngine::Components {
         GLuint vbo{0};
         GLuint ebo{0};
 
-        Shader shader;
-
         void allocate_gl_objects();
         void make_current_context();
 
     public:
         std::vector<MeshData> mesh_data;
         std::vector<unsigned int> vertex_indices;
+
+        Shader shader;
 
         using SparrowEngine::Behavior::Behavior;
 
@@ -100,9 +101,12 @@ namespace SparrowEngine::Components {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshData),
                               (void *) offsetof(MeshData, position));
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(MeshData),
-                              (void *) offsetof(MeshData, texture_coordinate));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MeshData),
+                              (void *) offsetof(MeshData, normal));
         glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshData),
+                              (void *) offsetof(MeshData, texture_coordinate));
+        glEnableVertexAttribArray(2);
 
         glBindVertexArray(0);
         Behavior::start();
@@ -110,7 +114,7 @@ namespace SparrowEngine::Components {
 
     void Mesh::render() {
         make_current_context();
-        shader.push_mats(game_object.lock()->transform);
+        shader.push_mats(game_object.lock()->get_model_matrix_in_global());
         if (ebo)
             glDrawElements(GL_TRIANGLES, vertex_indices.size(), GL_UNSIGNED_INT, 0);
         else
