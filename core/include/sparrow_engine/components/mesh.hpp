@@ -50,7 +50,7 @@ namespace SparrowEngine::Components {
         void render() override;
 
         std::shared_ptr<Mesh> use_shader(const char *vertex_path, const char *fragment_path);
-        std::shared_ptr<Mesh> set_texture(unsigned int slot, std::string image_path);
+        std::shared_ptr<Mesh> set_texture(std::string field_name, std::string image_path);
     };
 
     void Mesh::allocate_gl_objects() {
@@ -129,8 +129,8 @@ namespace SparrowEngine::Components {
         return std::static_pointer_cast<Mesh>(Behavior::shared_from_this());
     }
 
-    std::shared_ptr<Mesh> Mesh::set_texture(unsigned int slot, std::string image_path) {
-        shader.load_texture(slot, image_path);
+    std::shared_ptr<Mesh> Mesh::set_texture(std::string field_name, std::string image_path) {
+        shader.load_texture(field_name, image_path);
         return std::static_pointer_cast<Mesh>(Behavior::shared_from_this());
     }
 

@@ -15,6 +15,7 @@ namespace SparrowEngine {
     class Texture {
     public:
         GLuint id{0};
+        std::string texture_path;
 
         static std::unordered_map<std::string, std::weak_ptr<Texture>> texture_cache; // image_path <-> texture
 
@@ -24,7 +25,7 @@ namespace SparrowEngine {
         void free();
         void use();
 
-        static std::shared_ptr<Texture> create_texture(const std::string image_path);
+        static std::shared_ptr<Texture> create_texture(std::string image_path);
     };
 
     Texture::~Texture() {
@@ -62,12 +63,14 @@ namespace SparrowEngine {
         }
 
         stbi_image_free(data);
+        texture_path = image_path;
     }
 
     void Texture::free() {
         if (id)
             glDeleteTextures(1, &id);
         id = 0;
+        texture_path = "";
     }
 
     void Texture::use() {

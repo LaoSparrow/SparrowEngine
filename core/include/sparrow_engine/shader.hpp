@@ -14,6 +14,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
+#include <memory>
 
 #ifndef MAX_TEXTURES
 #define MAX_TEXTURES 16
@@ -24,7 +26,7 @@ namespace SparrowEngine {
     class Shader {
     private:
         bool is_loaded{false};
-        Texture textures[MAX_TEXTURES];
+        std::vector<std::pair<std::string, std::shared_ptr<Texture>>> textures;
 
         bool is_projection_presented{false};
         bool is_view_presented{false};
@@ -38,7 +40,7 @@ namespace SparrowEngine {
         ~Shader();
 
         void initialize(const char *vertex_path, const char* fragment_path);
-        void load_texture(unsigned int slot, std::string &image_path);
+        void load_texture(std::string field_name, std::string image_path);
         void push_mats(Transform model_transform);
         void push_mats(glm::mat4 model_matrix = glm::mat4(1.0f));
         void use();
@@ -149,11 +151,11 @@ namespace SparrowEngine {
             if (strcmp(name_buf, "model") == 0) is_model_presented = true;
             if (strcmp(name_buf, "normal_matrix") == 0) is_normal_matrix_presented = true;
 
-            if (strncmp(name_buf, "texture_", 8) != 0)
-                continue;
-            int texture_slot;
-            sscanf_s(name_buf, "texture_%u", &texture_slot);
-            set_int(name_buf, texture_slot);
+//            if (strncmp(name_buf, "texture_", 8) != 0)
+//                continue;
+//            int texture_slot;
+//            sscanf_s(name_buf, "texture_%u", &texture_slot);
+//            set_int(name_buf, texture_slot);
         }
     }
 
@@ -162,8 +164,22 @@ namespace SparrowEngine {
             glDeleteProgram(id);
     }
 
-    void Shader::load_texture(unsigned int slot, std::string &image_path) {
-        textures[slot].load(image_path);
+    void Shader::load_texture(std::string field_name, std::string image_path) {
+        auto it = std::find_if(
+            textures.begin(),
+            textures.end(),
+            [&field_name](const auto &x) {
+            return x.first == field_name;
+        });
+        if (it == textures.end()) {
+            textures.push_back({field_name, Texture::create_texture(image_path)});
+            set_int(field_name.c_str(), textures.size()-1);
+            return;
+        }
+        if (it->second->texture_path != image_path) {
+            it->second = Texture::create_texture(image_path);
+            return;
+        }
     }
 
     void Shader::use() {
@@ -174,9 +190,11 @@ namespace SparrowEngine {
                 return;
 
             glUseProgram(id);
-            for (int i = 0; i < MAX_TEXTURES; i++) {
+            int i = 0;
+            for (const auto &t : textures) {
                 glActiveTexture(GL_TEXTURE0 + i);
-                textures[i].use();
+                t.second->use();
+                i++;
             }
         }
     }
