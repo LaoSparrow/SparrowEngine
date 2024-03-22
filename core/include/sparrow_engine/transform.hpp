@@ -2,6 +2,7 @@
 
 #include "glm/vec3.hpp"
 #include "glm/matrix.hpp"
+#include "glm/gtc/quaternion.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
 #include <memory>
@@ -12,6 +13,12 @@ namespace SparrowEngine {
     public:
         glm::vec3 position{0.0f, 0.0f, 0.0f};
         glm::vec3 scale{1.0f, 1.0f, 1.0f};
-        glm::vec3 rotation{0.0f, 0.0f, 0.0f};
+        glm::quat rotation{1.0f, 0.0f, 0.0f, 0.0f};
+
+        void set_euler_angles(float x, float y, float z);
     };
+
+    void Transform::set_euler_angles(float x, float y, float z) {
+        rotation = glm::vec3(glm::radians(x), glm::radians(y), glm::radians(z));
+    }
 }

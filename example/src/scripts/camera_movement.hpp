@@ -13,22 +13,32 @@ private:
     bool is_cursor_disabled = false;
 
 public:
+    enum CameraMode {
+        fps,
+        free
+    };
+
     float speed = 1.0f;
     float acc_speed = 5.0f;
     float mouse_sensitivity = 0.2f;
+    CameraMode mode = CameraMode::fps;
+    float yaw = 0.0f;
+    float pitch = 0.0f;
 
     using SparrowEngine::Behavior::Behavior;
 
     void update() override {
         GLFWwindow *w = SparrowEngine::GameWindow::GetCurrentActiveWindow()->glfw_window;
         auto parent = game_object.lock();
-        glm::vec3 front;
-        front.x = -sin(glm::radians(parent->transform.rotation.y)) * cos(glm::radians(parent->transform.rotation.x));
-        front.y =  sin(glm::radians(parent->transform.rotation.x));
-        front.z = -cos(glm::radians(parent->transform.rotation.y)) * cos(glm::radians(parent->transform.rotation.x));
-        front = glm::normalize(front);
-        glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.0f, 1.0f, 0.0f)));
+        glm::mat4 model_mat = parent->get_model_matrix_in_global();
+
+        glm::vec3 pos(model_mat[3]);
+        model_mat[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+        glm::vec3 front = glm::normalize(glm::vec3(model_mat * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
+        glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(model_mat * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f))));
         glm::vec3 up = glm::normalize(glm::cross(right, front));
+
         auto delta_time = (float)SparrowEngine::Time::GetDeltaTime();
         float current_speed = speed;
         if (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT))
@@ -68,9 +78,24 @@ public:
             offset_x *= mouse_sensitivity;
             offset_y *= mouse_sensitivity;
 
-            parent->transform.rotation.y += offset_x;
-            parent->transform.rotation.x += offset_y;
-            parent->transform.rotation.x = std::max(std::min(parent->transform.rotation.x, 89.9f), -89.9f);
+            switch (mode) {
+                case CameraMode::fps:
+                    yaw += offset_x;
+                    pitch += offset_y;
+                    pitch = std::min(std::max(pitch, -90.0f), 90.0f);
+
+                    parent->transform.rotation = glm::quat(glm::vec3(
+                        glm::radians(pitch),
+                        glm::radians(yaw),
+                        0.0f));
+                    break;
+
+                case CameraMode::free:
+                    parent->transform.rotation *=
+                        glm::angleAxis(glm::radians(offset_y), glm::vec3(1.0f, 0.0f, 0.0f)) *
+                        glm::angleAxis(glm::radians(offset_x), glm::vec3(0.0f, 1.0f, 0.0f));
+                    break;
+            }
         }
     }
 };

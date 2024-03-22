@@ -30,8 +30,8 @@ namespace SparrowEngine {
                     type, id, severity, message);
         }
         else {
-            fprintf(stdout, "GL CALLBACK: type = 0x%x, id = %u, severity = 0x%x, message = %s\n",
-                    type, id, severity, message);
+//            fprintf(stdout, "GL CALLBACK: type = 0x%x, id = %u, severity = 0x%x, message = %s\n",
+//                    type, id, severity, message);
         }
     }
 

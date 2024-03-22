@@ -8,6 +8,9 @@
 #include "sparrow_engine/components/mesh.hpp"
 #include "sparrow_engine/components/camera.hpp"
 
+#include "glm/gtc/quaternion.hpp"
+
+#include "../scripts/transform_modification.hpp"
 #include "../scripts/camera_movement.hpp"
 #include "../constants.hpp"
 
@@ -22,22 +25,6 @@ public:
         glClearColor(sin(now) * 0.5f + 0.5f, cos(now) * 0.5f + 0.5f, sin(now * 2) * 0.5f + 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         SparrowEngine::GameObject::render();
-    }
-};
-
-class TransformModification : public SparrowEngine::Behavior {
-public:
-    using SparrowEngine::Behavior::Behavior;
-
-    void update() override {
-        auto parent_obj = game_object.lock();
-        if (ImGui::Begin((parent_obj->name + " transform").c_str())) {
-            ImGui::SliderFloat3("position", (float *)&parent_obj->transform.position, -5.0f, 5.0f);
-            ImGui::SliderFloat3("scale", (float *)&parent_obj->transform.scale, 0.0f, 5.0f);
-            ImGui::SliderFloat3("rotation", (float *)&parent_obj->transform.rotation, -360.0f, 360.0f);
-
-            ImGui::End();
-        }
     }
 };
 
@@ -71,7 +58,7 @@ class Scene1 : public SparrowEngine::Scene {
                 ->add_child_object("Cube child")
                 ->configure_child_object([](auto obj) -> void {
                     obj->transform.position = glm::vec3(1.0f, 1.0f, 0.0f);
-                    obj->transform.rotation = glm::vec3(0.0f, 45.0f, 0.0f);
+                    obj->transform.rotation *= glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
                     obj->add_component<TransformModification>();
                     obj->add_component<Mesh>(
                         SparrowEngine::Example::Constants::cube);

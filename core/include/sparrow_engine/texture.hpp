@@ -8,6 +8,7 @@
 
 #include <string>
 #include <iostream>
+#include <memory>
 
 namespace SparrowEngine {
 
@@ -15,16 +16,22 @@ namespace SparrowEngine {
     public:
         GLuint id{0};
 
+        static std::unordered_map<std::string, std::weak_ptr<Texture>> texture_cache; // image_path <-> texture
+
         ~Texture();
 
         void load(const std::string &image_path);
         void free();
         void use();
+
+        static std::shared_ptr<Texture> create_texture(const std::string image_path);
     };
 
     Texture::~Texture() {
         free();
     }
+
+    std::unordered_map<std::string, std::weak_ptr<Texture>> Texture::texture_cache;
 
     void Texture::load(const std::string &image_path) {
         stbi_set_flip_vertically_on_load(true);
@@ -66,6 +73,22 @@ namespace SparrowEngine {
     void Texture::use() {
         if (id)
             glBindTexture(GL_TEXTURE_2D, id);
+    }
+
+    std::shared_ptr<Texture> Texture::create_texture(const std::string image_path) {
+        auto cache = texture_cache.find(image_path);
+        if (cache != texture_cache.end()) {
+            auto sp = cache->second.lock();
+            if (sp)
+                return sp;
+            else
+                texture_cache.erase(cache->first);
+        }
+
+        auto sp = std::make_shared<Texture>();
+        sp->load(image_path);
+        texture_cache.insert({image_path, std::weak_ptr(sp)});
+        return sp;
     }
 
 }

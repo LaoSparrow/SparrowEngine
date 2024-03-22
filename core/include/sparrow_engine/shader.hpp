@@ -26,14 +26,13 @@ namespace SparrowEngine {
         bool is_loaded{false};
         Texture textures[MAX_TEXTURES];
 
-        bool is_projection_present{false};
-        bool is_view_present{false};
-        bool is_model_present{false};
+        bool is_projection_presented{false};
+        bool is_view_presented{false};
+        bool is_model_presented{false};
+        bool is_normal_matrix_presented{false};
 
     public:
         GLuint id{0};
-
-        static GLuint current_active_id;
 
         Shader() = default;
         ~Shader();
@@ -45,11 +44,11 @@ namespace SparrowEngine {
         void use();
 
         void set_int(const char *name, int value);
+        void set_float(const char *name, float value);
         void set_vec3(const char *name, glm::vec3 value);
+        void set_mat3(const char *name, glm::mat3 &value);
         void set_mat4(const char *name, glm::mat4 &value);
     };
-
-    GLuint Shader::current_active_id = 0;
 
     void Shader::initialize(const char *vertex_path, const char *fragment_path) {
         if (is_loaded)
@@ -61,7 +60,7 @@ namespace SparrowEngine {
         std::string fragmentCode;
         std::ifstream vShaderFile;
         std::ifstream fShaderFile;
-        // 保证ifstream对象可以抛出异常：
+        // 保证 ifstream 对象可以抛出异常：
         vShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
         fShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
         try
@@ -80,9 +79,9 @@ namespace SparrowEngine {
             vertexCode   = vShaderStream.str();
             fragmentCode = fShaderStream.str();
         }
-        catch(std::ifstream::failure e)
+        catch(std::ifstream::failure &e)
         {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
         }
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
@@ -145,13 +144,14 @@ namespace SparrowEngine {
                                &uniform_size,
                                &uniform_type,
                                name_buf);
-            if (strcmp(name_buf, "projection") == 0) is_projection_present = true;
-            if (strcmp(name_buf, "view") == 0) is_view_present = true;
-            if (strcmp(name_buf, "model") == 0) is_model_present = true;
+            if (strcmp(name_buf, "projection") == 0) is_projection_presented = true;
+            if (strcmp(name_buf, "view") == 0) is_view_presented = true;
+            if (strcmp(name_buf, "model") == 0) is_model_presented = true;
+            if (strcmp(name_buf, "normal_matrix") == 0) is_normal_matrix_presented = true;
 
             if (strncmp(name_buf, "texture_", 8) != 0)
                 continue;
-            unsigned int texture_slot;
+            int texture_slot;
             sscanf_s(name_buf, "texture_%u", &texture_slot);
             set_int(name_buf, texture_slot);
         }
@@ -168,15 +168,16 @@ namespace SparrowEngine {
 
     void Shader::use() {
         if (is_loaded) {
-//            if (current_active_id == id)
-//                return;
+            GLint current_program;
+            glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
+            if (current_program == id)
+                return;
 
             glUseProgram(id);
             for (int i = 0; i < MAX_TEXTURES; i++) {
                 glActiveTexture(GL_TEXTURE0 + i);
                 textures[i].use();
             }
-            current_active_id = id;
         }
     }
 
@@ -185,9 +186,19 @@ namespace SparrowEngine {
         glUniform1i(glGetUniformLocation(id, name), value);
     }
 
+    void Shader::set_float(const char *name, float value) {
+        use();
+        glUniform1f(glGetUniformLocation(id, name), value);
+    }
+
     void Shader::set_vec3(const char *name, glm::vec3 value) {
         use();
         glUniform3fv(glGetUniformLocation(id, name), 1, glm::value_ptr(value));
+    }
+
+    void Shader::set_mat3(const char *name, glm::mat3 &value) {
+        use();
+        glUniformMatrix3fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(value));
     }
 
     void Shader::set_mat4(const char *name, glm::mat4 &value) {
@@ -198,29 +209,39 @@ namespace SparrowEngine {
     void Shader::push_mats(Transform model_transform) {
         use();
         GameWindow *w = GameWindow::GetCurrentActiveWindow();
-        if (is_projection_present)
+        if (is_projection_presented)
             set_mat4("projection", w->mat_projection);
-        if (is_view_present)
+        if (is_view_presented)
             set_mat4("view", w->mat_view);
-        if (is_model_present) {
+        if (is_model_presented || is_normal_matrix_presented) {
             glm::mat4 model = glm::translate(glm::mat4(1.0f), model_transform.position);
-            model = glm::rotate(model, glm::radians(model_transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-            model = glm::rotate(model, glm::radians(model_transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::rotate(model, glm::radians(model_transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+//            model = glm::rotate(model, glm::radians(model_transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+//            model = glm::rotate(model, glm::radians(model_transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+//            model = glm::rotate(model, glm::radians(model_transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+            model *= glm::mat4_cast(model_transform.rotation);
             model = glm::scale(model, model_transform.scale);
-            set_mat4("model", model);
+
+            if (is_model_presented)
+                set_mat4("model", model);
+            if (is_normal_matrix_presented) {
+                glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(w->mat_view * model)));
+                set_mat3("normal_matrix", normal_matrix);
+            }
         }
     }
 
     void Shader::push_mats(glm::mat4 model_matrix) {
         use();
         GameWindow *w = GameWindow::GetCurrentActiveWindow();
-        if (is_projection_present)
+        if (is_projection_presented)
             set_mat4("projection", w->mat_projection);
-        if (is_view_present)
+        if (is_view_presented)
             set_mat4("view", w->mat_view);
-        if (is_model_present) {
+        if (is_model_presented)
             set_mat4("model", model_matrix);
+        if (is_normal_matrix_presented) {
+            glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(w->mat_view * model_matrix)));
+            set_mat3("normal_matrix", normal_matrix);
         }
     }
 }
