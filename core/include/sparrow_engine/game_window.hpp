@@ -16,6 +16,8 @@
 
 #include <glm/matrix.hpp>
 
+// TODO: Migrate rendering, updating to Engine::RenderingLoop
+
 namespace SparrowEngine {
 
     class GameWindow {
@@ -25,7 +27,6 @@ namespace SparrowEngine {
         static GameWindow* current_active_window;
 
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
         std::shared_ptr<Scene> scene_ptr;
 
         bool is_closed{};
@@ -36,7 +37,6 @@ namespace SparrowEngine {
         GLFWwindow *glfw_window;
         ImGuiContext *imgui_context;
         std::function<void(GameWindow&)> on_draw_callback;
-
         int width, height;
         glm::mat4 mat_projection, mat_view;
 
@@ -48,9 +48,8 @@ namespace SparrowEngine {
         void render();
         void close();
 
-        inline GameWindow& bind_scene(std::shared_ptr<Scene> scene) {
+        inline void bind_scene(std::shared_ptr<Scene> scene) {
             scene_ptr = std::move(scene);
-            return *this;
         }
 
         virtual void on_draw();
@@ -124,8 +123,8 @@ namespace SparrowEngine {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        if (scene_ptr)
-            scene_ptr->new_frame();
+        if (Scene::GetCurrentScene())
+            Scene::GetCurrentScene()->new_frame();
         render();
     }
 
@@ -133,8 +132,8 @@ namespace SparrowEngine {
         make_current_context();
 
         on_draw_callback(*this);
-        if (scene_ptr)
-            scene_ptr->render();
+        if (Scene::GetCurrentScene())
+            Scene::GetCurrentScene()->render();
 
 
         ImGui::Render();

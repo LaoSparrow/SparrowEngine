@@ -32,7 +32,7 @@ class Scene1 : public SparrowEngine::Scene {
     void start() override {
 //        scene_root.children.emplace_back(std::make_shared<BackgroundObject>());
         using Mesh = SparrowEngine::Components::Mesh;
-        scene_root.children.emplace_back(
+        scene_root->children.emplace_back(
             std::make_shared<SparrowEngine::GameObject>("Plane")
                 ->add_component<TransformModification>()
                 ->add_component<SparrowEngine::Components::Mesh>(
@@ -44,7 +44,7 @@ class Scene1 : public SparrowEngine::Scene {
                         ->set_texture("texture_1", "../example/textures/awesomeface.png");
                 })
         );
-        scene_root.children.emplace_back(
+        scene_root->children.emplace_back(
             std::make_shared<SparrowEngine::GameObject>("Cube")
                 ->add_component<TransformModification>()
                 ->add_component<SparrowEngine::Components::Mesh>(
@@ -69,7 +69,7 @@ class Scene1 : public SparrowEngine::Scene {
                     });
                 })
         );
-        scene_root.children.emplace_back(
+        scene_root->children.emplace_back(
             std::make_shared<SparrowEngine::GameObject>("Camera Object")
                 ->configure_object([](auto o) -> void {
                     o->transform.position = glm::vec3(0.0f, 0.0f, 3.0f);

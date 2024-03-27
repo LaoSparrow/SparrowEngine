@@ -32,6 +32,7 @@ namespace SparrowEngine {
         bool is_view_presented{false};
         bool is_model_presented{false};
         bool is_normal_matrix_presented{false};
+        bool is_view_position_presented{false};
 
     public:
         GLuint id{0};
@@ -40,7 +41,7 @@ namespace SparrowEngine {
         ~Shader();
 
         void initialize(const char *vertex_path, const char* fragment_path);
-        void load_texture(std::string field_name, std::string image_path);
+        void load_texture(std::string field_name, std::string res_url);
         void push_mats(Transform model_transform);
         void push_mats(glm::mat4 model_matrix = glm::mat4(1.0f));
         void use();
@@ -150,6 +151,7 @@ namespace SparrowEngine {
             if (strcmp(name_buf, "view") == 0) is_view_presented = true;
             if (strcmp(name_buf, "model") == 0) is_model_presented = true;
             if (strcmp(name_buf, "normal_matrix") == 0) is_normal_matrix_presented = true;
+            if (strcmp(name_buf, "view_position") == 0) is_view_position_presented = true;
 
 //            if (strncmp(name_buf, "texture_", 8) != 0)
 //                continue;
@@ -164,7 +166,7 @@ namespace SparrowEngine {
             glDeleteProgram(id);
     }
 
-    void Shader::load_texture(std::string field_name, std::string image_path) {
+    void Shader::load_texture(std::string field_name, std::string res_url) {
         auto it = std::find_if(
             textures.begin(),
             textures.end(),
@@ -172,12 +174,12 @@ namespace SparrowEngine {
             return x.first == field_name;
         });
         if (it == textures.end()) {
-            textures.push_back({field_name, Texture::create_texture(image_path)});
+            textures.push_back({field_name, Texture::create_texture(res_url)});
             set_int(field_name.c_str(), textures.size()-1);
             return;
         }
-        if (it->second->texture_path != image_path) {
-            it->second = Texture::create_texture(image_path);
+        if (it->second->texture_path != res_url) {
+            it->second = Texture::create_texture(res_url);
             return;
         }
     }
@@ -242,10 +244,12 @@ namespace SparrowEngine {
             if (is_model_presented)
                 set_mat4("model", model);
             if (is_normal_matrix_presented) {
-                glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(w->mat_view * model)));
+                glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(model)));
                 set_mat3("normal_matrix", normal_matrix);
             }
         }
+        if (is_view_position_presented)
+            set_vec3("view_position", glm::inverse(w->mat_view)[3]);
     }
 
     void Shader::push_mats(glm::mat4 model_matrix) {
@@ -258,8 +262,10 @@ namespace SparrowEngine {
         if (is_model_presented)
             set_mat4("model", model_matrix);
         if (is_normal_matrix_presented) {
-            glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(w->mat_view * model_matrix)));
+            glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(model_matrix)));
             set_mat3("normal_matrix", normal_matrix);
         }
+        if (is_view_position_presented)
+            set_vec3("view_position", glm::inverse(w->mat_view)[3]);
     }
 }

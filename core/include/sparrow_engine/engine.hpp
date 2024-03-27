@@ -2,6 +2,7 @@
 
 #include "sparrow_engine/engine.hpp"
 #include "sparrow_engine/game_window.hpp"
+#include "sparrow_engine/scene.hpp"
 #include "sparrow_engine/time.hpp"
 #include "sparrow_engine/logger.hpp"
 
@@ -51,6 +52,7 @@ namespace SparrowEngine {
                     continue;
                 }
 
+                Scene::current_scene = w->scene_ptr;
                 w->update();
             }
 

@@ -13,12 +13,6 @@
 
 namespace SparrowEngine::Components {
 
-    struct MeshData {
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 texture_coordinate;
-    };
-
     class Mesh : public SparrowEngine::Behavior {
     private:
         GLuint vao{0};
@@ -29,6 +23,12 @@ namespace SparrowEngine::Components {
         void make_current_context();
 
     public:
+        struct MeshData {
+            glm::vec3 position;
+            glm::vec3 normal;
+            glm::vec2 texture_coordinate;
+        };
+        
         std::vector<MeshData> mesh_data;
         std::vector<unsigned int> vertex_indices;
 
@@ -50,7 +50,7 @@ namespace SparrowEngine::Components {
         void render() override;
 
         std::shared_ptr<Mesh> use_shader(const char *vertex_path, const char *fragment_path);
-        std::shared_ptr<Mesh> set_texture(std::string field_name, std::string image_path);
+        std::shared_ptr<Mesh> set_texture(std::string field_name, std::string res_url);
     };
 
     void Mesh::allocate_gl_objects() {
@@ -62,7 +62,7 @@ namespace SparrowEngine::Components {
 
     void Mesh::make_current_context() {
         glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+//        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         if (ebo)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         shader.use();
@@ -129,8 +129,8 @@ namespace SparrowEngine::Components {
         return std::static_pointer_cast<Mesh>(Behavior::shared_from_this());
     }
 
-    std::shared_ptr<Mesh> Mesh::set_texture(std::string field_name, std::string image_path) {
-        shader.load_texture(field_name, image_path);
+    std::shared_ptr<Mesh> Mesh::set_texture(std::string field_name, std::string res_url) {
+        shader.load_texture(field_name, res_url);
         return std::static_pointer_cast<Mesh>(Behavior::shared_from_this());
     }
 

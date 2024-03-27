@@ -21,7 +21,7 @@ namespace SparrowEngine {
 
         ~Texture();
 
-        void load(const std::string &image_path);
+        void load(const std::string &res_url);
         void free();
         void use();
 
@@ -34,13 +34,38 @@ namespace SparrowEngine {
 
     std::unordered_map<std::string, std::weak_ptr<Texture>> Texture::texture_cache;
 
-    void Texture::load(const std::string &image_path) {
+    void Texture::load(const std::string &res_url) {
+        if (res_url.starts_with("se://texture?color=")) {
+            unsigned char data[sizeof(unsigned int)];
+            sscanf_s(res_url.c_str(), "se://texture?color=%x", (unsigned int*)data);
+            std::swap(data[0], data[2]);
+
+            glGenTextures(1, &id);
+            glBindTexture(GL_TEXTURE_2D, id);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexImage2D(GL_TEXTURE_2D,
+                         0, // mipmap level
+                         GL_RGB,
+                         1, 1, // width height
+                         0, // always zero
+                         GL_RGB,
+                         GL_UNSIGNED_BYTE,
+                         data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            texture_path = res_url;
+            return;
+        }
+
         stbi_set_flip_vertically_on_load(true);
 
         int width, height, nrChannels;
-        unsigned char *data = stbi_load(image_path.c_str(), &width, &height, &nrChannels, 0);
+        unsigned char *data = stbi_load(res_url.c_str(), &width, &height, &nrChannels, 0);
         if (!data) {
-            std::cout << "Failed to load texture, path: " << image_path << std::endl;
+            std::cout << "Failed to load texture, path: " << res_url << std::endl;
         }
 
         glGenTextures(1, &id);
@@ -53,17 +78,17 @@ namespace SparrowEngine {
         if (data) {
             glTexImage2D(GL_TEXTURE_2D,
                          0, // mipmap level
-                         image_path.ends_with(".png") ? GL_RGBA : GL_RGB,
+                         res_url.ends_with(".png") ? GL_RGBA : GL_RGB,
                          width, height,
                          0, // always zero
-                         image_path.ends_with(".png") ? GL_RGBA : GL_RGB,
+                         res_url.ends_with(".png") ? GL_RGBA : GL_RGB,
                          GL_UNSIGNED_BYTE,
                          data);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
 
         stbi_image_free(data);
-        texture_path = image_path;
+        texture_path = res_url;
     }
 
     void Texture::free() {

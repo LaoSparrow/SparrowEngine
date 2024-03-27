@@ -8,13 +8,13 @@ namespace SparrowEngine::Example {
     public:
         Constants() = delete;
 
-        static std::initializer_list<SparrowEngine::Components::MeshData> plane;
+        static std::initializer_list<SparrowEngine::Components::Mesh::MeshData> plane;
         static std::initializer_list<unsigned int> plane_vertex_indices;
 
-        static std::initializer_list<SparrowEngine::Components::MeshData> cube;
+        static std::initializer_list<SparrowEngine::Components::Mesh::MeshData> cube;
     };
 
-    std::initializer_list<SparrowEngine::Components::MeshData> Constants::plane = {
+    std::initializer_list<SparrowEngine::Components::Mesh::MeshData> Constants::plane = {
         {{0.5f,  0.5f,  0.0f}, {0.0f,  0.0f,  1.0f}, {1.0f, 1.0f}},   // 右上
         {{0.5f,  -0.5f, 0.0f}, {0.0f,  0.0f,  1.0f}, {1.0f, 0.0f}},   // 右下
         {{-0.5f, -0.5f, 0.0f}, {0.0f,  0.0f,  1.0f}, {0.0f, 0.0f}},   // 左下
@@ -26,7 +26,7 @@ namespace SparrowEngine::Example {
         1, 2, 3  // 第二个三角形
     };
 
-    std::initializer_list<SparrowEngine::Components::MeshData> Constants::cube = {
+    std::initializer_list<SparrowEngine::Components::Mesh::MeshData> Constants::cube = {
         {{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, {0.0f, 0.0f}},
         {{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, {1.0f, 0.0f}},
         {{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}, {1.0f, 1.0f}},

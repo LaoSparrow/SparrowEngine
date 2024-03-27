@@ -17,6 +17,7 @@ add_library(SparrowEngine.Core INTERFACE
         include/sparrow_engine/transform.hpp
         include/sparrow_engine/components/camera.hpp
         include/sparrow_engine/lighting.hpp
+        include/sparrow_engine/components/light.hpp
 )
 
 find_package(glad CONFIG REQUIRED)
