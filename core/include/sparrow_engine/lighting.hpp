@@ -25,12 +25,12 @@ namespace SparrowEngine {
         struct LightData {
             LightType type = LightType::None;
 
-            glm::vec3 position{};
-            glm::vec3 direction{};
+            alignas(16) glm::vec3 position{};
+            alignas(16) glm::vec3 direction{};
 
-            glm::vec3 ambient{};
-            glm::vec3 diffuse{};
-            glm::vec3 specular{};
+            alignas(16) glm::vec3 ambient{};
+            alignas(16) glm::vec3 diffuse{};
+            alignas(16) glm::vec3 specular{};
 
             float constant{};
             float linear{};
@@ -107,7 +107,7 @@ namespace SparrowEngine {
 
     void Lighting::push_data(int index) {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo_id);
-        glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * index, sizeof(LightData), light_data.data());
+        glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(LightData) * index, sizeof(LightData), &light_data[index]);
     }
 
     Lighting::LightData& Lighting::get_data(int index) {

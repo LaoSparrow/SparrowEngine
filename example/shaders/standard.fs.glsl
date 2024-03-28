@@ -37,9 +37,9 @@ layout(std430, binding = 0) buffer LightBuffer {
     Light lights[];
 };
 
-vec3 calc_point_light(Light light) {
+vec3 calc_directional_light(Light light) {
+    vec3 lightDir = normalize(-light.direction);
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(norm, lightDir), 0.0f);
 
     vec3 viewDir = normalize(view_position - FragPos);
@@ -52,6 +52,39 @@ vec3 calc_point_light(Light light) {
     return ambient + diffuse + specular;
 }
 
+vec3 calc_point_light(Light light) {
+    vec3 lightDir = normalize(light.position - FragPos);
+    vec3 norm = normalize(Normal);
+    float diff = max(dot(norm, lightDir), 0.0f);
+
+    vec3 viewDir = normalize(view_position - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+
+    vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoor));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoor));
+    vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoor));
+
+    float distance    = length(light.position - FragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+    return (ambient + diffuse + specular) * attenuation;
+}
+
+vec3 calc_spot_light(Light light) {
+    vec3 lightDir = normalize(light.position - FragPos);
+    float theta = dot(lightDir, normalize(-light.direction));
+    if (theta > light.cut_off)
+        return calc_point_light(light);
+    else if (theta > light.outer_cut_off) {
+        float epsilon   = light.cut_off - light.outer_cut_off;
+        float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
+        return calc_point_light(light) * intensity;
+    }
+    else
+        return light.ambient * vec3(texture(material.diffuse, TexCoor));
+}
+
 void main()
 {
     vec3 result;
@@ -60,11 +93,13 @@ void main()
         case 0:
             break;
         case 1:
+            result += calc_directional_light(lights[i]);
             break;
         case 2:
             result += calc_point_light(lights[i]);
             break;
         case 3:
+            result += calc_spot_light(lights[i]);
             break;
         case 4:
             break;

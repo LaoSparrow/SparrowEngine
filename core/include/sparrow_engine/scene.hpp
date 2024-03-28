@@ -14,7 +14,7 @@ namespace SparrowEngine {
 
     public:
         std::shared_ptr<GameObject> scene_root = std::make_shared<GameObject>("Scene Root");
-        Lighting lighting;
+        std::shared_ptr<Lighting> lighting = std::make_shared<Lighting>();
 
         void new_frame();
 
@@ -30,18 +30,18 @@ namespace SparrowEngine {
     void Scene::new_frame() {
         if (!has_started) {
             has_started = true;
+            lighting->initialize();
             start();
         }
+        lighting->use();
         update();
     }
 
     void Scene::start() {
-        lighting.initialize();
         scene_root->start();
     }
 
     void Scene::update() {
-        lighting.use();
         scene_root->update();
     }
 
