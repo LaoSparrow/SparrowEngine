@@ -24,5 +24,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
 
+find_package(assimp CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE assimp::assimp)
+
 target_include_directories(${PROJECT_NAME} PRIVATE ${SparrowEngine.Core_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} PRIVATE SparrowEngine.Core)

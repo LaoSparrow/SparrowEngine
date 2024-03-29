@@ -3,6 +3,8 @@
 #include "texture.hpp"
 #include "transform.hpp"
 #include "game_window.hpp"
+#include "material.hpp"
+#include "utils.hpp"
 
 #include "glad/glad.h"
 
@@ -16,47 +18,55 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <any>
 
-#ifndef MAX_TEXTURES
-#define MAX_TEXTURES 16
-#endif
 
 namespace SparrowEngine {
 
     class Shader {
     private:
-        bool is_loaded{false};
-        std::vector<std::pair<std::string, std::shared_ptr<Texture>>> textures;
 
-        bool is_projection_presented{false};
-        bool is_view_presented{false};
-        bool is_model_presented{false};
-        bool is_normal_matrix_presented{false};
-        bool is_view_position_presented{false};
+        struct {
+            bool projection{false};
+            bool view{false};
+            bool model{false};
+            bool normal_matrix{false};
+            bool view_position{false};
+        } field_presented;
 
     public:
         GLuint id{0};
 
+        std::string vertex_shader_path;
+        std::string fragment_shader_path;
+
         Shader() = default;
         ~Shader();
 
-        void initialize(const char *vertex_path, const char* fragment_path);
-        void load_texture(std::string field_name, std::string res_url);
-        void push_mats(Transform model_transform);
+        void load(std::string vertex_path, std::string fragment_path);
+        void free();
         void push_mats(glm::mat4 model_matrix = glm::mat4(1.0f));
         void use();
 
         void set_int(const char *name, int value);
         void set_float(const char *name, float value);
         void set_vec3(const char *name, glm::vec3 value);
+        void set_vec4(const char *name, glm::vec4 value);
         void set_mat3(const char *name, glm::mat3 &value);
         void set_mat4(const char *name, glm::mat4 &value);
+
+        void load_material(const std::shared_ptr<Material>& material);
+
+        static std::unordered_map<std::pair<std::string, std::string>, std::weak_ptr<Shader>, SparrowEngine::Utils::pair_hash> shader_cache; // {vertex_shader_path,fragment_shader_path} <-> shader
+        static std::shared_ptr<Shader> create_shader(std::string vs_src, std::string fs_src);
     };
 
-    void Shader::initialize(const char *vertex_path, const char *fragment_path) {
-        if (is_loaded)
+    void Shader::load(std::string vertex_path, std::string fragment_path) {
+        if (id)
             return;
-        is_loaded = true;
+
+        vertex_shader_path = vertex_path;
+        fragment_shader_path = fragment_path;
 
         // 1. 从文件路径中获取顶点/片段着色器
         std::string vertexCode;
@@ -147,58 +157,29 @@ namespace SparrowEngine {
                                &uniform_size,
                                &uniform_type,
                                name_buf);
-            if (strcmp(name_buf, "projection") == 0) is_projection_presented = true;
-            if (strcmp(name_buf, "view") == 0) is_view_presented = true;
-            if (strcmp(name_buf, "model") == 0) is_model_presented = true;
-            if (strcmp(name_buf, "normal_matrix") == 0) is_normal_matrix_presented = true;
-            if (strcmp(name_buf, "view_position") == 0) is_view_position_presented = true;
-
-//            if (strncmp(name_buf, "texture_", 8) != 0)
-//                continue;
-//            int texture_slot;
-//            sscanf_s(name_buf, "texture_%u", &texture_slot);
-//            set_int(name_buf, texture_slot);
+            if (strcmp(name_buf, "projection") == 0) field_presented.projection = true;
+            if (strcmp(name_buf, "view") == 0) field_presented.view = true;
+            if (strcmp(name_buf, "model") == 0) field_presented.model = true;
+            if (strcmp(name_buf, "normal_matrix") == 0) field_presented.normal_matrix = true;
+            if (strcmp(name_buf, "view_position") == 0) field_presented.view_position = true;
         }
+    }
+
+    void Shader::free() {
+        if (id)
+            glDeleteProgram(id);
+        id = 0;
+        vertex_shader_path = "";
+        fragment_shader_path = "";
     }
 
     Shader::~Shader() {
-        if (is_loaded)
-            glDeleteProgram(id);
-    }
-
-    void Shader::load_texture(std::string field_name, std::string res_url) {
-        auto it = std::find_if(
-            textures.begin(),
-            textures.end(),
-            [&field_name](const auto &x) {
-            return x.first == field_name;
-        });
-        if (it == textures.end()) {
-            textures.push_back({field_name, Texture::create_texture(res_url)});
-            set_int(field_name.c_str(), textures.size()-1);
-            return;
-        }
-        if (it->second->texture_path != res_url) {
-            it->second = Texture::create_texture(res_url);
-            return;
-        }
+        free();
     }
 
     void Shader::use() {
-        if (is_loaded) {
-            GLint current_program;
-            glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
-            if (current_program == id)
-                return;
-
+        if (id)
             glUseProgram(id);
-            int i = 0;
-            for (const auto &t : textures) {
-                glActiveTexture(GL_TEXTURE0 + i);
-                t.second->use();
-                i++;
-            }
-        }
     }
 
     void Shader::set_int(const char *name, int value) {
@@ -216,6 +197,11 @@ namespace SparrowEngine {
         glUniform3fv(glGetUniformLocation(id, name), 1, glm::value_ptr(value));
     }
 
+    void Shader::set_vec4(const char *name, glm::vec4 value) {
+        use();
+        glUniform4fv(glGetUniformLocation(id, name), 1, glm::value_ptr(value));
+    }
+
     void Shader::set_mat3(const char *name, glm::mat3 &value) {
         use();
         glUniformMatrix3fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(value));
@@ -226,46 +212,82 @@ namespace SparrowEngine {
         glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(value));
     }
 
-    void Shader::push_mats(Transform model_transform) {
-        use();
-        GameWindow *w = GameWindow::GetCurrentActiveWindow();
-        if (is_projection_presented)
-            set_mat4("projection", w->mat_projection);
-        if (is_view_presented)
-            set_mat4("view", w->mat_view);
-        if (is_model_presented || is_normal_matrix_presented) {
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), model_transform.position);
-//            model = glm::rotate(model, glm::radians(model_transform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-//            model = glm::rotate(model, glm::radians(model_transform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-//            model = glm::rotate(model, glm::radians(model_transform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-            model *= glm::mat4_cast(model_transform.rotation);
-            model = glm::scale(model, model_transform.scale);
-
-            if (is_model_presented)
-                set_mat4("model", model);
-            if (is_normal_matrix_presented) {
-                glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(model)));
-                set_mat3("normal_matrix", normal_matrix);
-            }
-        }
-        if (is_view_position_presented)
-            set_vec3("view_position", glm::inverse(w->mat_view)[3]);
-    }
-
     void Shader::push_mats(glm::mat4 model_matrix) {
         use();
         GameWindow *w = GameWindow::GetCurrentActiveWindow();
-        if (is_projection_presented)
+        if (field_presented.projection)
             set_mat4("projection", w->mat_projection);
-        if (is_view_presented)
+        if (field_presented.view)
             set_mat4("view", w->mat_view);
-        if (is_model_presented)
+        if (field_presented.model)
             set_mat4("model", model_matrix);
-        if (is_normal_matrix_presented) {
+        if (field_presented.normal_matrix) {
             glm::mat3 normal_matrix = glm::mat3(glm::transpose(glm::inverse(model_matrix)));
             set_mat3("normal_matrix", normal_matrix);
         }
-        if (is_view_position_presented)
+        if (field_presented.view_position)
             set_vec3("view_position", glm::inverse(w->mat_view)[3]);
+    }
+
+    void Shader::load_material(const std::shared_ptr<Material>& material) {
+        use();
+        int texture_index = 0;
+        for (const auto &i : material->parameters) {
+            auto field_name = i.first;
+            auto value = i.second;
+
+            if (value.type() == typeid(std::shared_ptr<Texture>)) {
+                auto t = std::any_cast<std::shared_ptr<Texture>>(value);
+
+                set_int(field_name.c_str(), texture_index);
+                glActiveTexture(GL_TEXTURE0 + texture_index);
+                t->use();
+
+                texture_index++;
+                continue;
+            }
+            if (value.type() == typeid(int)) {
+                set_int(field_name.c_str(), std::any_cast<int>(value));
+                continue;
+            }
+            if (value.type() == typeid(float)) {
+                set_float(field_name.c_str(), std::any_cast<float>(value));
+                continue;
+            }
+            if (value.type() == typeid(glm::vec3)) {
+                set_vec3(field_name.c_str(), std::any_cast<glm::vec3>(value));
+                continue;
+            }
+            if (value.type() == typeid(glm::vec4)) {
+                set_vec4(field_name.c_str(), std::any_cast<glm::vec4>(value));
+                continue;
+            }
+            if (value.type() == typeid(glm::mat3)) {
+                set_mat3(field_name.c_str(), std::any_cast<glm::mat3&>(value));
+                continue;
+            }
+            if (value.type() == typeid(glm::mat4)) {
+                set_mat4(field_name.c_str(), std::any_cast<glm::mat4&>(value));
+                continue;
+            }
+        }
+    }
+
+    std::unordered_map<std::pair<std::string, std::string>, std::weak_ptr<Shader>, SparrowEngine::Utils::pair_hash> Shader::shader_cache;
+
+    std::shared_ptr<Shader> Shader::create_shader(std::string vs_src, std::string fs_src) {
+        auto cache = shader_cache.find({ vs_src, fs_src });
+        if (cache != shader_cache.end()) {
+            auto sp = cache->second.lock();
+            if (sp)
+                return sp;
+            else
+                shader_cache.erase(cache->first);
+        }
+
+        auto sp = std::make_shared<Shader>();
+        sp->load(vs_src, fs_src);
+        shader_cache.insert({{ vs_src, fs_src }, std::weak_ptr(sp)});
+        return sp;
     }
 }

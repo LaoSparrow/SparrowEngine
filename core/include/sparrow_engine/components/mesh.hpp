@@ -2,6 +2,7 @@
 
 #include "sparrow_engine/behavior.hpp"
 #include "sparrow_engine/shader.hpp"
+#include "sparrow_engine/material.hpp"
 
 #include "glad/glad.h"
 #include "glm/vec3.hpp"
@@ -23,25 +24,26 @@ namespace SparrowEngine::Components {
         void make_current_context();
 
     public:
-        struct MeshData {
+        struct Vertex {
             glm::vec3 position;
             glm::vec3 normal;
             glm::vec2 texture_coordinate;
         };
         
-        std::vector<MeshData> mesh_data;
+        std::vector<Vertex> vertices;
         std::vector<unsigned int> vertex_indices;
 
-        Shader shader;
+        std::shared_ptr<Shader> shader;
+        std::shared_ptr<Material> material;
 
         using SparrowEngine::Behavior::Behavior;
 
-        Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<MeshData> mesh_data);
+        Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<Vertex> mesh_data);
 
-        Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<MeshData> mesh_data,
+        Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<Vertex> mesh_data,
              std::initializer_list<unsigned int> vertex_indices);
 
-        Mesh(std::weak_ptr<GameObject> obj, std::vector<MeshData> &&mesh_data);
+        Mesh(std::weak_ptr<GameObject> obj, std::vector<Vertex> &&mesh_data);
 
         ~Mesh();
 
@@ -49,8 +51,7 @@ namespace SparrowEngine::Components {
 
         void render() override;
 
-        std::shared_ptr<Mesh> use_shader(const char *vertex_path, const char *fragment_path);
-        std::shared_ptr<Mesh> set_texture(std::string field_name, std::string res_url);
+//        std::shared_ptr<Mesh> use_shader(const char *vertex_path, const char *fragment_path);
     };
 
     void Mesh::allocate_gl_objects() {
@@ -63,20 +64,20 @@ namespace SparrowEngine::Components {
     void Mesh::make_current_context() {
         glBindVertexArray(vao);
 //        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        if (ebo)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        shader.use();
+//        if (ebo)
+//            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        shader->use();
     }
 
-    Mesh::Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<MeshData> mesh_data)
-        : Behavior(std::move(obj)), mesh_data(mesh_data) {}
+    Mesh::Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<Vertex> mesh_data)
+        : Behavior(std::move(obj)), vertices(mesh_data) {}
 
-    Mesh::Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<MeshData> mesh_data,
+    Mesh::Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<Vertex> mesh_data,
                std::initializer_list<unsigned int> vertex_indices)
-               : Behavior(std::move(obj)), mesh_data(mesh_data), vertex_indices(vertex_indices) {}
+               : Behavior(std::move(obj)), vertices(mesh_data), vertex_indices(vertex_indices) {}
 
-    Mesh::Mesh(std::weak_ptr<GameObject> obj, std::vector<MeshData> &&mesh_data)
-        : Behavior(std::move(obj)), mesh_data(mesh_data) {}
+    Mesh::Mesh(std::weak_ptr<GameObject> obj, std::vector<Vertex> &&mesh_data)
+        : Behavior(std::move(obj)), vertices(mesh_data) {}
 
     Mesh::~Mesh() {
         glDeleteVertexArrays(1, &vao);
@@ -91,21 +92,21 @@ namespace SparrowEngine::Components {
         make_current_context();
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(MeshData) * mesh_data.size(), mesh_data.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
         if (ebo) {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * vertex_indices.size(), vertex_indices.data(), GL_STATIC_DRAW);
         }
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshData),
-                              (void *) offsetof(MeshData, position));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (void *) offsetof(Vertex, position));
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MeshData),
-                              (void *) offsetof(MeshData, normal));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (void *) offsetof(Vertex, normal));
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshData),
-                              (void *) offsetof(MeshData, texture_coordinate));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (void *) offsetof(Vertex, texture_coordinate));
         glEnableVertexAttribArray(2);
 
         glBindVertexArray(0);
@@ -114,24 +115,20 @@ namespace SparrowEngine::Components {
 
     void Mesh::render() {
         make_current_context();
-        shader.push_mats(game_object.lock()->get_model_matrix_in_global());
+        shader->load_material(material);
+        shader->push_mats(game_object.lock()->get_model_matrix_in_global());
         if (ebo)
             glDrawElements(GL_TRIANGLES, vertex_indices.size(), GL_UNSIGNED_INT, 0);
         else
-            glDrawArrays(GL_TRIANGLES, 0, mesh_data.size());
+            glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
         glBindVertexArray(0);
         Behavior::render();
     }
 
-    std::shared_ptr<Mesh> Mesh::use_shader(const char *vertex_path, const char *fragment_path) {
-        shader.initialize(vertex_path, fragment_path);
-        return std::static_pointer_cast<Mesh>(Behavior::shared_from_this());
-    }
-
-    std::shared_ptr<Mesh> Mesh::set_texture(std::string field_name, std::string res_url) {
-        shader.load_texture(field_name, res_url);
-        return std::static_pointer_cast<Mesh>(Behavior::shared_from_this());
-    }
+//    std::shared_ptr<Mesh> Mesh::use_shader(const char *vertex_path, const char *fragment_path) {
+//        shader->load(vertex_path, fragment_path);
+//        return std::static_pointer_cast<Mesh>(Behavior::shared_from_this());
+//    }
 
 }

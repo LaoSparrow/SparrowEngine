@@ -17,22 +17,19 @@ namespace SparrowEngine {
         GLuint id{0};
         std::string texture_path;
 
-        static std::unordered_map<std::string, std::weak_ptr<Texture>> texture_cache; // image_path <-> texture
-
         ~Texture();
 
         void load(const std::string &res_url);
         void free();
         void use();
 
+        static std::unordered_map<std::string, std::weak_ptr<Texture>> texture_cache; // image_path <-> texture
         static std::shared_ptr<Texture> create_texture(std::string image_path);
     };
 
     Texture::~Texture() {
         free();
     }
-
-    std::unordered_map<std::string, std::weak_ptr<Texture>> Texture::texture_cache;
 
     void Texture::load(const std::string &res_url) {
         if (res_url.starts_with("se://texture?color=")) {
@@ -102,6 +99,8 @@ namespace SparrowEngine {
         if (id)
             glBindTexture(GL_TEXTURE_2D, id);
     }
+
+    std::unordered_map<std::string, std::weak_ptr<Texture>> Texture::texture_cache;
 
     std::shared_ptr<Texture> Texture::create_texture(const std::string image_path) {
         auto cache = texture_cache.find(image_path);

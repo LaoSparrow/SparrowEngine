@@ -7,6 +7,7 @@
 #include "sparrow_engine/behavior.hpp"
 #include "sparrow_engine/components/mesh.hpp"
 #include "sparrow_engine/components/camera.hpp"
+#include "sparrow_engine/material.hpp"
 
 #include "glm/gtc/quaternion.hpp"
 
@@ -38,10 +39,12 @@ class Scene1 : public SparrowEngine::Scene {
                 ->add_component<SparrowEngine::Components::Mesh>(
                     SparrowEngine::Example::Constants::plane,
                     SparrowEngine::Example::Constants::plane_vertex_indices)
-                ->configure_component<SparrowEngine::Components::Mesh>([](auto m) -> void {
-                    m->use_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl")
-                        ->set_texture("texture_0", "../example/textures/container.jpg")
-                        ->set_texture("texture_1", "../example/textures/awesomeface.png");
+                ->configure_component<SparrowEngine::Components::Mesh>([](auto m) {
+                    m->shader = SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl");
+                    m->material = SparrowEngine::Material::create_material({
+                       { "texture_0", "../example/textures/container.jpg" },
+                       { "texture_1", "../example/textures/awesomeface.png" }
+                    });
                 })
         );
         scene_root->children.emplace_back(
@@ -49,29 +52,33 @@ class Scene1 : public SparrowEngine::Scene {
                 ->add_component<TransformModification>()
                 ->add_component<SparrowEngine::Components::Mesh>(
                     SparrowEngine::Example::Constants::cube)
-                ->configure_component<SparrowEngine::Components::Mesh>([](auto m) -> void {
-                    m->use_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl")
-                        ->set_texture("texture_0", "../example/textures/container.jpg")
-                        ->set_texture("texture_1", "../example/textures/awesomeface.png");
+                ->configure_component<SparrowEngine::Components::Mesh>([](auto m) {
+                    m->shader = SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl");
+                    m->material = SparrowEngine::Material::create_material({
+                       { "texture_0", "../example/textures/container.jpg" },
+                       { "texture_1", "../example/textures/awesomeface.png" }
+                   });
                 })
 
                 ->add_child_object("Cube child")
-                ->configure_child_object([](auto obj) -> void {
+                ->configure_child_object([](auto obj) {
                     obj->transform.position = glm::vec3(1.0f, 1.0f, 0.0f);
                     obj->transform.rotation *= glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
                     obj->add_component<TransformModification>();
                     obj->add_component<Mesh>(
                         SparrowEngine::Example::Constants::cube);
-                    obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) -> void {
-                        m->use_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl")
-                            ->set_texture("texture_0", "../example/textures/container.jpg")
-                            ->set_texture("texture_1", "../example/textures/awesomeface.png");
+                    obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
+                        m->shader = SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl");
+                        m->material = SparrowEngine::Material::create_material({
+                           { "texture_0", "../example/textures/container.jpg" },
+                           { "texture_1", "../example/textures/awesomeface.png" }
+                       });
                     });
                 })
         );
         scene_root->children.emplace_back(
             std::make_shared<SparrowEngine::GameObject>("Camera Object")
-                ->configure_object([](auto o) -> void {
+                ->configure_object([](auto o) {
                     o->transform.position = glm::vec3(0.0f, 0.0f, 3.0f);
                 })
                 ->add_component<TransformModification>()

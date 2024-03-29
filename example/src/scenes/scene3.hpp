@@ -2,6 +2,8 @@
 
 #include "sparrow_engine/scene.hpp"
 #include "sparrow_engine/components/light.hpp"
+#include "sparrow_engine/shader.hpp"
+#include "sparrow_engine/material.hpp"
 
 #include "../constants.hpp"
 #include "../scripts/camera_movement.hpp"
@@ -31,11 +33,13 @@ class Scene3 : public SparrowEngine::Scene {
 
                 indicator->add_component<Mesh>(SparrowEngine::Example::Constants::cube);
                 indicator->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                    m->use_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
-                    m->shader.load_texture("material.diffuse", "se://texture?color=000000");
-                    m->shader.load_texture("material.specular", "se://texture?color=000000");
-                    m->shader.load_texture("material.emission", "se://texture?color=FFFFFF");
-                    m->shader.set_float("material.shininess", 1.0f);
+                    m->shader = SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
+                    m->material = SparrowEngine::Material::create_material({
+                        { "material.diffuse", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                        { "material.specular", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                        { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=FFFFFF") },
+                        { "material.shininess", 1.0f }
+                    });
                 });
             });
         });
@@ -47,11 +51,13 @@ class Scene3 : public SparrowEngine::Scene {
 
             obj->add_component<Mesh>(SparrowEngine::Example::Constants::cube);
             obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                m->use_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
-                m->shader.load_texture("material.diffuse", "se://texture?color=000000");
-                m->shader.load_texture("material.specular", "se://texture?color=000000");
-                m->shader.load_texture("material.emission", "se://texture?color=FFFFFF");
-                m->shader.set_float("material.shininess", 1.0f);
+                m->shader = SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
+                m->material = SparrowEngine::Material::create_material({
+                    { "material.diffuse", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                    { "material.specular", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                    { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=FFFFFF") },
+                    { "material.shininess", 1.0f }
+                });
             });
 
             obj->add_component<SparrowEngine::Components::Light>();
@@ -75,11 +81,13 @@ class Scene3 : public SparrowEngine::Scene {
 
             obj->add_component<Mesh>(SparrowEngine::Example::Constants::cube);
             obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                m->use_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
-                m->shader.load_texture("material.diffuse", "se://texture?color=000000");
-                m->shader.load_texture("material.specular", "se://texture?color=000000");
-                m->shader.load_texture("material.emission", "se://texture?color=FF0000");
-                m->shader.set_float("material.shininess", 1.0f);
+                m->shader = SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
+                m->material = SparrowEngine::Material::create_material({
+                    { "material.diffuse", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                    { "material.specular", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                    { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=FF0000") },
+                    { "material.shininess", 1.0f }
+                });
             });
 
             obj->add_component<SparrowEngine::Components::Light>();
@@ -113,19 +121,22 @@ class Scene3 : public SparrowEngine::Scene {
             char name_buf[10];
             sprintf(name_buf, "Cube %d", i);
 
+            auto cube_material = SparrowEngine::Material::create_material({
+                { "material.diffuse", SparrowEngine::Texture::create_texture("../example/textures/container2.png") },
+                { "material.specular", SparrowEngine::Texture::create_texture("../example/textures/container2_specular.png") },
+                { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                { "material.shininess", 32.0f }
+            });
+
             scene_root->add_child_object(name_buf);
-            scene_root->configure_child_object([&cubePositions, &i](auto obj) {
+            scene_root->configure_child_object([&cubePositions, &i, cube_material](auto obj) {
                     obj->transform.position = cubePositions[i];
                     obj->transform.rotation = glm::angleAxis(glm::radians(20.0f * i), glm::normalize(glm::vec3(1.0f, 0.3f, 0.5f)));
 
                     obj->add_component<Mesh>(SparrowEngine::Example::Constants::cube);
-                    obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                        m->use_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
-
-                        m->shader.load_texture("material.diffuse", "../example/textures/container2.png");
-                        m->shader.load_texture("material.specular", "../example/textures/container2_specular.png");
-                        m->shader.load_texture("material.emission", "se://texture?color=000000");
-                        m->shader.set_float("material.shininess", 32.0f);
+                    obj->configure_component<Mesh>([cube_material](std::shared_ptr<Mesh> m) {
+                        m->shader = SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
+                        m->material = cube_material;
                     });
                 });
         }
@@ -148,11 +159,13 @@ class Scene3 : public SparrowEngine::Scene {
 
                 light_obj->add_component<Mesh>(SparrowEngine::Example::Constants::cube);
                 light_obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                    m->use_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
-                    m->shader.load_texture("material.diffuse", "se://texture?color=000000");
-                    m->shader.load_texture("material.specular", "se://texture?color=000000");
-                    m->shader.load_texture("material.emission", "se://texture?color=FFFFFF");
-                    m->shader.set_float("material.shininess", 1.0f);
+                    m->shader = SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/standard.fs.glsl");
+                    m->material = SparrowEngine::Material::create_material({
+                        { "material.diffuse", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                        { "material.specular", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                        { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=FFFFFF") },
+                        { "material.shininess", 1.0f }
+                    });
                 });
 
                 light_obj->add_component<SparrowEngine::Components::Light>();
