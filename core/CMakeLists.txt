@@ -20,6 +20,7 @@ add_library(SparrowEngine.Core INTERFACE
         include/sparrow_engine/components/light.hpp
         include/sparrow_engine/material.hpp
         include/sparrow_engine/utils.hpp
+        include/sparrow_engine/model_loader.hpp
 )
 
 find_package(glad CONFIG REQUIRED)
@@ -39,6 +40,9 @@ target_link_libraries(${PROJECT_NAME} INTERFACE imgui::imgui)
 
 find_package(assimp CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} INTERFACE assimp::assimp)
+
+find_package(fmt CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} INTERFACE fmt::fmt-header-only)
 
 set(SPARROW_ENGINE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME} INTERFACE ${SPARROW_ENGINE_INCLUDE_DIR})

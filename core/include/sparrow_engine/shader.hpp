@@ -1,6 +1,5 @@
 #pragma once
 
-#include "texture.hpp"
 #include "transform.hpp"
 #include "game_window.hpp"
 #include "material.hpp"
@@ -55,8 +54,6 @@ namespace SparrowEngine {
         void set_mat3(const char *name, glm::mat3 &value);
         void set_mat4(const char *name, glm::mat4 &value);
 
-        void load_material(const std::shared_ptr<Material>& material);
-
         static std::unordered_map<std::pair<std::string, std::string>, std::weak_ptr<Shader>, SparrowEngine::Utils::pair_hash> shader_cache; // {vertex_shader_path,fragment_shader_path} <-> shader
         static std::shared_ptr<Shader> create_shader(std::string vs_src, std::string fs_src);
     };
@@ -68,27 +65,25 @@ namespace SparrowEngine {
         vertex_shader_path = vertex_path;
         fragment_shader_path = fragment_path;
 
-        // 1. 从文件路径中获取顶点/片段着色器
         std::string vertexCode;
         std::string fragmentCode;
         std::ifstream vShaderFile;
         std::ifstream fShaderFile;
-        // 保证 ifstream 对象可以抛出异常：
+
         vShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
         fShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
         try
         {
-            // 打开文件
             vShaderFile.open(vertex_path);
             fShaderFile.open(fragment_path);
             std::stringstream vShaderStream, fShaderStream;
-            // 读取文件的缓冲内容到数据流中
+
             vShaderStream << vShaderFile.rdbuf();
             fShaderStream << fShaderFile.rdbuf();
-            // 关闭文件处理器
+
             vShaderFile.close();
             fShaderFile.close();
-            // 转换数据流到string
+
             vertexCode   = vShaderStream.str();
             fragmentCode = fShaderStream.str();
         }
@@ -99,16 +94,14 @@ namespace SparrowEngine {
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
 
-        // 2. 编译着色器
         unsigned int vertex, fragment;
         int success;
         char infoLog[512];
 
-// 顶点着色器
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
-// 打印编译错误（如果有的话）
+
         glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
         if(!success)
         {
@@ -116,11 +109,10 @@ namespace SparrowEngine {
             std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
         };
 
-// 片段着色器
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
-// 打印编译错误（如果有的话）
+
         glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
         if(!success)
         {
@@ -132,7 +124,7 @@ namespace SparrowEngine {
         glAttachShader(id, vertex);
         glAttachShader(id, fragment);
         glLinkProgram(id);
-// 打印连接错误（如果有的话）
+
         glGetProgramiv(id, GL_LINK_STATUS, &success);
         if(!success)
         {
@@ -140,7 +132,6 @@ namespace SparrowEngine {
             std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
         }
 
-// 删除着色器，它们已经链接到我们的程序中了，已经不再需要了
         glDeleteShader(vertex);
         glDeleteShader(fragment);
 
@@ -227,50 +218,6 @@ namespace SparrowEngine {
         }
         if (field_presented.view_position)
             set_vec3("view_position", glm::inverse(w->mat_view)[3]);
-    }
-
-    void Shader::load_material(const std::shared_ptr<Material>& material) {
-        use();
-        int texture_index = 0;
-        for (const auto &i : material->parameters) {
-            auto field_name = i.first;
-            auto value = i.second;
-
-            if (value.type() == typeid(std::shared_ptr<Texture>)) {
-                auto t = std::any_cast<std::shared_ptr<Texture>>(value);
-
-                set_int(field_name.c_str(), texture_index);
-                glActiveTexture(GL_TEXTURE0 + texture_index);
-                t->use();
-
-                texture_index++;
-                continue;
-            }
-            if (value.type() == typeid(int)) {
-                set_int(field_name.c_str(), std::any_cast<int>(value));
-                continue;
-            }
-            if (value.type() == typeid(float)) {
-                set_float(field_name.c_str(), std::any_cast<float>(value));
-                continue;
-            }
-            if (value.type() == typeid(glm::vec3)) {
-                set_vec3(field_name.c_str(), std::any_cast<glm::vec3>(value));
-                continue;
-            }
-            if (value.type() == typeid(glm::vec4)) {
-                set_vec4(field_name.c_str(), std::any_cast<glm::vec4>(value));
-                continue;
-            }
-            if (value.type() == typeid(glm::mat3)) {
-                set_mat3(field_name.c_str(), std::any_cast<glm::mat3&>(value));
-                continue;
-            }
-            if (value.type() == typeid(glm::mat4)) {
-                set_mat4(field_name.c_str(), std::any_cast<glm::mat4&>(value));
-                continue;
-            }
-        }
     }
 
     std::unordered_map<std::pair<std::string, std::string>, std::weak_ptr<Shader>, SparrowEngine::Utils::pair_hash> Shader::shader_cache;

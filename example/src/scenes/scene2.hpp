@@ -22,15 +22,16 @@ class Scene2 : public SparrowEngine::Scene {
                 })
                 ->add_component<SparrowEngine::Components::Mesh>(SparrowEngine::Example::Constants::cube)
                 ->configure_component<SparrowEngine::Components::Mesh>([](auto m) -> void {
-                    m->shader = SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/light_shader.fs.glsl");
+                    m->material = SparrowEngine::Material::create_material(
+                        SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/light_shader.fs.glsl"), {});
                 })
             );
         scene_root->children.emplace_back(
             std::make_shared<SparrowEngine::GameObject>("cube")
                 ->add_component<SparrowEngine::Components::Mesh>(SparrowEngine::Example::Constants::cube)
                 ->configure_component<SparrowEngine::Components::Mesh>([](auto m) -> void {
-                    m->shader = SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/object_light_shaderv2.fs.glsl");
-                    m->material = SparrowEngine::Material::create_material({
+                    m->material = SparrowEngine::Material::create_material(
+                        SparrowEngine::Shader::create_shader("../example/shaders/standard.vs.glsl", "../example/shaders/object_light_shaderv2.fs.glsl"), {
                         { "light.position", glm::vec3(1.2f, 1.0f, 2.0f) },
                         { "light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f) },
                         { "light.diffuse",  glm::vec3(0.5f, 0.5f, 0.5f) },

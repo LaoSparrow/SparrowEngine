@@ -1,7 +1,6 @@
 #pragma once
 
 #include "sparrow_engine/behavior.hpp"
-#include "sparrow_engine/shader.hpp"
 #include "sparrow_engine/material.hpp"
 
 #include "glad/glad.h"
@@ -26,14 +25,13 @@ namespace SparrowEngine::Components {
     public:
         struct Vertex {
             glm::vec3 position;
-            glm::vec3 normal;
             glm::vec2 texture_coordinate;
+            glm::vec3 normal;
         };
         
         std::vector<Vertex> vertices;
         std::vector<unsigned int> vertex_indices;
 
-        std::shared_ptr<Shader> shader;
         std::shared_ptr<Material> material;
 
         using SparrowEngine::Behavior::Behavior;
@@ -50,8 +48,6 @@ namespace SparrowEngine::Components {
         void start() override;
 
         void render() override;
-
-//        std::shared_ptr<Mesh> use_shader(const char *vertex_path, const char *fragment_path);
     };
 
     void Mesh::allocate_gl_objects() {
@@ -66,7 +62,7 @@ namespace SparrowEngine::Components {
 //        glBindBuffer(GL_ARRAY_BUFFER, vbo);
 //        if (ebo)
 //            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        shader->use();
+//        material->shader->use();
     }
 
     Mesh::Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<Vertex> mesh_data)
@@ -102,11 +98,11 @@ namespace SparrowEngine::Components {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                               (void *) offsetof(Vertex, position));
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                              (void *) offsetof(Vertex, normal));
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                               (void *) offsetof(Vertex, texture_coordinate));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                              (void *) offsetof(Vertex, normal));
         glEnableVertexAttribArray(2);
 
         glBindVertexArray(0);
@@ -115,8 +111,8 @@ namespace SparrowEngine::Components {
 
     void Mesh::render() {
         make_current_context();
-        shader->load_material(material);
-        shader->push_mats(game_object.lock()->get_model_matrix_in_global());
+        material->use();
+        material->shader->push_mats(game_object.lock()->get_model_matrix_in_global());
         if (ebo)
             glDrawElements(GL_TRIANGLES, vertex_indices.size(), GL_UNSIGNED_INT, 0);
         else
@@ -125,10 +121,5 @@ namespace SparrowEngine::Components {
         glBindVertexArray(0);
         Behavior::render();
     }
-
-//    std::shared_ptr<Mesh> Mesh::use_shader(const char *vertex_path, const char *fragment_path) {
-//        shader->load(vertex_path, fragment_path);
-//        return std::static_pointer_cast<Mesh>(Behavior::shared_from_this());
-//    }
 
 }

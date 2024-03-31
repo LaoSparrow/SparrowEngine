@@ -40,8 +40,8 @@ class Scene1 : public SparrowEngine::Scene {
                     SparrowEngine::Example::Constants::plane,
                     SparrowEngine::Example::Constants::plane_vertex_indices)
                 ->configure_component<SparrowEngine::Components::Mesh>([](auto m) {
-                    m->shader = SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl");
-                    m->material = SparrowEngine::Material::create_material({
+                    m->material = SparrowEngine::Material::create_material(
+                        SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl"), {
                        { "texture_0", "../example/textures/container.jpg" },
                        { "texture_1", "../example/textures/awesomeface.png" }
                     });
@@ -53,8 +53,8 @@ class Scene1 : public SparrowEngine::Scene {
                 ->add_component<SparrowEngine::Components::Mesh>(
                     SparrowEngine::Example::Constants::cube)
                 ->configure_component<SparrowEngine::Components::Mesh>([](auto m) {
-                    m->shader = SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl");
-                    m->material = SparrowEngine::Material::create_material({
+                    m->material = SparrowEngine::Material::create_material(
+                        SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl"), {
                        { "texture_0", "../example/textures/container.jpg" },
                        { "texture_1", "../example/textures/awesomeface.png" }
                    });
@@ -68,8 +68,8 @@ class Scene1 : public SparrowEngine::Scene {
                     obj->add_component<Mesh>(
                         SparrowEngine::Example::Constants::cube);
                     obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                        m->shader = SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl");
-                        m->material = SparrowEngine::Material::create_material({
+                        m->material = SparrowEngine::Material::create_material(
+                            SparrowEngine::Shader::create_shader("../example/shaders/transform_shader.vs.glsl", "../example/shaders/double_texture_shader.fs.glsl"), {
                            { "texture_0", "../example/textures/container.jpg" },
                            { "texture_1", "../example/textures/awesomeface.png" }
                        });
