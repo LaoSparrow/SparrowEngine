@@ -6,7 +6,6 @@
 #include "scenes/scene3.hpp"
 #include "scenes/scene4.hpp"
 
-
 int main() {
     SparrowEngine::Engine::Initialize({
                                           .opengl = {

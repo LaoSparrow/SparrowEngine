@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <utility>
+
 namespace SparrowEngine::Utils {
 
     struct pair_hash {

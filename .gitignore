@@ -1,2 +1,7 @@
 .idea
 cmake-build-debug-visual-studio
+cmake-build-release-visual-studio
+cmake-build-default-visual-studio
+/CMakeLists.txt
+/build
+/.xmake
