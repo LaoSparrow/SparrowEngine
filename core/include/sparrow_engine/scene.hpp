@@ -4,12 +4,15 @@
 #include "lighting.hpp"
 
 #include <memory>
+#include <stack>
 
 namespace SparrowEngine {
 
     class Scene : public std::enable_shared_from_this<Scene> {
     private:
         bool has_started = false;
+        std::stack<std::shared_ptr<GameObject>> obj_stack;
+
         static std::shared_ptr<Scene> current_scene;
 
     public:

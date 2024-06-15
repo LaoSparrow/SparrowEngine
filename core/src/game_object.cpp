@@ -13,18 +13,15 @@ GameObject::GameObject(std::weak_ptr<GameObject> parent, std::string name)
 }
 
 void GameObject::start() {
-    start_behaviors();
-    start_children();
+
 }
 
 void GameObject::update() {
-    update_behaviors();
-    update_children();
+
 }
 
 void GameObject::render() {
-    render_behaviors();
-    render_children();
+
 }
 
 std::shared_ptr<GameObject> GameObject::configure_child_object(std::function<void(std::shared_ptr<GameObject>)> options) {
