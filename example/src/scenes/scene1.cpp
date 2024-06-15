@@ -19,6 +19,7 @@ using GameObject = SparrowEngine::GameObject;
 using Material = SparrowEngine::Material;
 using Shader = SparrowEngine::Shader;
 using Constants = SparrowEngine::Example::Constants;
+using Texture = SparrowEngine::Texture;
 
 void BackgroundObject::render() {
     double now = SparrowEngine::Time::GetTimeNow();
@@ -28,7 +29,7 @@ void BackgroundObject::render() {
 }
 
 void Scene1::start() {
-//        scene_root.children.emplace_back(std::make_shared<BackgroundObject>());
+    scene_root->children.emplace_back(std::make_shared<BackgroundObject>());
     using Mesh = Components::Mesh;
     scene_root->children.emplace_back(
         std::make_shared<GameObject>("Plane")
@@ -39,8 +40,8 @@ void Scene1::start() {
             ->configure_component<Components::Mesh>([](auto m) {
                 m->material = Material::create_material(
                     Shader::create_shader("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
-                        { "texture_0", "../../../../example/resources/textures/container.jpg" },
-                        { "texture_1", "../../../../example/resources/textures/awesomeface.png" }
+                        { "texture_0", Texture::create_texture("../../../../example/resources/textures/container.jpg") },
+                        { "texture_1", Texture::create_texture("../../../../example/resources/textures/awesomeface.png") }
                     });
             })
     );
@@ -52,8 +53,8 @@ void Scene1::start() {
             ->configure_component<Components::Mesh>([](auto m) {
                 m->material = Material::create_material(
                     Shader::create_shader("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
-                        { "texture_0", "../../../../example/resources/textures/container.jpg" },
-                        { "texture_1", "../../../../example/resources/textures/awesomeface.png" }
+                        { "texture_0", Texture::create_texture("../../../../example/resources/textures/container.jpg") },
+                        { "texture_1", Texture::create_texture("../../../../example/resources/textures/awesomeface.png") }
                     });
             })
 
@@ -67,8 +68,8 @@ void Scene1::start() {
                 obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
                     m->material = Material::create_material(
                         Shader::create_shader("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
-                            { "texture_0", "../../../../example/resources/textures/container.jpg" },
-                            { "texture_1", "../../../../example/resources/textures/awesomeface.png" }
+                            { "texture_0", Texture::create_texture("../../../../example/resources/textures/container.jpg") },
+                            { "texture_1", Texture::create_texture("../../../../example/resources/textures/awesomeface.png") }
                         });
                 });
             })

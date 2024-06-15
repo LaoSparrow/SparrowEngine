@@ -29,8 +29,7 @@ void TransformModification::update() {
             parent_obj->transform.rotation = glm::quat(glm::radians(euler_angle));
             orig_quat = parent_obj->transform.rotation;
         }
-
-        ImGui::End();
     }
+    ImGui::End();
     Behavior::update();
 }
