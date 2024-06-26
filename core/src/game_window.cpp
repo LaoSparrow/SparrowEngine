@@ -1,6 +1,8 @@
 #include "sparrow_engine/game_window.hpp"
 
-#include <iostream>
+#include "fmt/core.h"
+
+#include <ranges>
 
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -15,30 +17,45 @@ GameWindow* GameWindow::current_active_window;
 void GameWindow::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glfwMakeContextCurrent(window);
     glViewport(0, 0, width, height);
-    for (auto w : active_windows) {
-        if (w->glfw_window == window) {
-            w->width = width;
-            w->height = height;
-        }
+    for (auto w : active_windows
+        | std::views::filter([&window] (auto x) { return x->glfw_window == window;})) {
+        w->width = width;
+        w->height = height;
     }
 }
 
-GameWindow::GameWindow(const char *title, int width, int height) : on_draw_callback(
-    [this](const GameWindow &w) -> void { on_draw(); }) {
+void GameWindow::mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
+    for (auto w : active_windows
+                  | std::views::filter([&window] (auto x) { return x->glfw_window == window;})) {
+        w->input_system.mouse_button_event(button, action, mods);
+    }
+}
+
+void GameWindow::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    for (auto w : active_windows
+                  | std::views::filter([&window] (auto x) { return x->glfw_window == window;})) {
+        w->input_system.key_event(key, scancode, action, mods);
+    }
+}
+
+GameWindow::GameWindow(const char *title, int width, int height)
+        : on_draw_callback([this](const GameWindow &w) -> void { on_draw(); }){
     glfw_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
     if (glfw_window == nullptr) {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        fmt::println("Failed to create GLFW window");
         Terminate();
     }
     glfwMakeContextCurrent(glfw_window);
     this->width = width;
     this->height = height;
     glfwSetFramebufferSizeCallback(glfw_window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(glfw_window, mouse_button_callback);
+    glfwSetKeyCallback(glfw_window, key_callback);
 //        glfwSwapInterval(1);
 
     if (!is_glad_initialized) {
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-            std::cout << "Failed to Initialize GLAD" << std::endl;
+            fmt::println("Failed to Initialize GLAD");
         }
         is_glad_initialized = true;
     }
@@ -66,21 +83,24 @@ void GameWindow::make_current_context() const {
 void GameWindow::update() {
     make_current_context();
 
+    input_system.pre_update();
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    if (Scene::GetCurrentScene())
-        Scene::GetCurrentScene()->new_frame();
+    if (Scene::GetCurrent())
+        Scene::GetCurrent()->new_frame();
     render();
+    input_system.post_update();
 }
 
 void GameWindow::render() {
     make_current_context();
 
     on_draw_callback(*this);
-    if (Scene::GetCurrentScene())
-        Scene::GetCurrentScene()->render();
+    if (Scene::GetCurrent())
+        Scene::GetCurrent()->render();
 
 
     ImGui::Render();
@@ -117,8 +137,4 @@ void GameWindow::on_draw() {
 //        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-GameWindow *GameWindow::GetCurrentActiveWindow() {
-    return current_active_window;
 }

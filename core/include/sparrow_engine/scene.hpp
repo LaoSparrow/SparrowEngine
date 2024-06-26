@@ -14,6 +14,7 @@ namespace SparrowEngine {
         std::stack<std::shared_ptr<GameObject>> obj_stack;
 
         static std::shared_ptr<Scene> current_scene;
+        static std::shared_ptr<Scene> next_scene;
 
     public:
         std::shared_ptr<GameObject> scene_root = std::make_shared<GameObject>("Scene Root");
@@ -25,7 +26,8 @@ namespace SparrowEngine {
         virtual void update();
         virtual void render();
 
-        static std::shared_ptr<Scene> GetCurrentScene();
+        static std::shared_ptr<Scene> GetCurrent();
+        static void SwitchTo(std::shared_ptr<Scene> scene);
 
         friend class Engine;
     };

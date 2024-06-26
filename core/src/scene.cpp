@@ -60,7 +60,12 @@ void Scene::render() {
 }
 
 std::shared_ptr<Scene> Scene::current_scene;
+std::shared_ptr<Scene> Scene::next_scene;
 
-std::shared_ptr<Scene> Scene::GetCurrentScene() {
+std::shared_ptr<Scene> Scene::GetCurrent() {
     return current_scene;
+}
+
+void Scene::SwitchTo(std::shared_ptr<Scene> scene) {
+    next_scene = std::move(scene);
 }

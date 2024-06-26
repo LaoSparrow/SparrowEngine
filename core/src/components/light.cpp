@@ -3,8 +3,8 @@
 using namespace SparrowEngine::Components;
 
 void Light::start() {
-    lighting_parent = Scene::GetCurrentScene()->lighting;
-    data_slot = Scene::GetCurrentScene()->lighting->next_available_slot();
+    lighting_parent = Scene::GetCurrent()->lighting;
+    data_slot = Scene::GetCurrent()->lighting->next_available_slot();
 }
 
 void Light::update() {

@@ -1,5 +1,7 @@
 #include "sparrow_engine/engine.hpp"
 
+#include <iostream>
+
 using namespace SparrowEngine;
 
 void Engine::Initialize(SparrowEngineConfig config) {
@@ -12,6 +14,7 @@ void Engine::RenderingLoop() {
 
     std::set<GameWindow*> should_close_windows;
     while (!GameWindow::active_windows.empty()) {
+        glfwPollEvents();
         Time::Update();
         for (auto w : GameWindow::active_windows) {
             GameWindow::current_active_window = w;
@@ -22,6 +25,10 @@ void Engine::RenderingLoop() {
 
             Scene::current_scene = w->scene_ptr;
             w->update();
+            if (Scene::next_scene) {
+                w->bind_scene(Scene::next_scene);
+                Scene::next_scene = nullptr;
+            }
         }
 
         for (auto w : should_close_windows) {
@@ -29,6 +36,6 @@ void Engine::RenderingLoop() {
         }
         should_close_windows.clear();
 
-        glfwPollEvents();
+        std::cout << std::flush;
     }
 }

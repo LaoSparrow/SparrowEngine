@@ -15,7 +15,7 @@ namespace SparrowEngine {
         void reallocate_and_update_data();
 
     public:
-        enum LightType : int {
+        enum class LightType : int {
             None = 0,
             DirectionalLight = 1,
             PointLight = 2,

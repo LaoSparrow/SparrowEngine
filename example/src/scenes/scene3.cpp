@@ -1,4 +1,5 @@
 #include "scene3.hpp"
+#include "common.hpp"
 
 #include "sparrow_engine/components/camera.hpp"
 #include "sparrow_engine/components/light.hpp"
@@ -196,11 +197,7 @@ void Scene3::start() {
 }
 
 void Scene3::update() {
-    GLFWwindow *w = SparrowEngine::GameWindow::GetCurrentActiveWindow()->glfw_window;
-    if (glfwGetKey(w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        std::cout << "Closing current window..." << std::endl;
-        glfwSetWindowShouldClose(w, true);
-    }
+    SparrowEngine::Example::Scenes::Common::ProcessKeys();
     SparrowEngine::Scene::update();
 }
 

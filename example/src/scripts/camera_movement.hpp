@@ -7,7 +7,6 @@ namespace SparrowEngine::Example::Scripts {
     class CameraMovement : public SparrowEngine::Behavior {
     private:
         double last_cursor_x = 0.0, last_cursor_y = 0.0;
-        bool is_backslash_pressed = false;
         bool is_cursor_disabled = false;
 
     public:

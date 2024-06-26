@@ -1,6 +1,6 @@
 #include "scene4.hpp"
+#include "common.hpp"
 
-#include "sparrow_engine/game_window.hpp"
 #include "sparrow_engine/shader.hpp"
 #include "sparrow_engine/material.hpp"
 #include "sparrow_engine/model_loader.hpp"
@@ -126,11 +126,7 @@ void Scene4::start() {
 }
 
 void Scene4::update() {
-    GLFWwindow *w = SparrowEngine::GameWindow::GetCurrentActiveWindow()->glfw_window;
-    if (glfwGetKey(w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        std::cout << "Closing current window..." << std::endl;
-        glfwSetWindowShouldClose(w, true);
-    }
+    SparrowEngine::Example::Scenes::Common::ProcessKeys();
     SparrowEngine::Scene::update();
 }
 

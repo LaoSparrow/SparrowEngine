@@ -1,12 +1,15 @@
 #include "scene1.hpp"
+#include "common.hpp"
 
-#include "sparrow_engine/game_window.hpp"
+#include "sparrow_engine/input.hpp"
 #include "sparrow_engine/time.hpp"
 #include "sparrow_engine/components/mesh.hpp"
 #include "sparrow_engine/components/camera.hpp"
 #include "sparrow_engine/material.hpp"
 
 #include "glm/gtc/quaternion.hpp"
+
+#include "fmt/core.h"
 
 #include "../scripts/transform_modification.hpp"
 #include "../scripts/camera_movement.hpp"
@@ -98,11 +101,7 @@ void Scene1::start() {
 }
 
 void Scene1::update() {
-    GLFWwindow *w = SparrowEngine::GameWindow::GetCurrentActiveWindow()->glfw_window;
-    if (glfwGetKey(w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        std::cout << "Closing current window..." << std::endl;
-        glfwSetWindowShouldClose(w, true);
-    }
+    SparrowEngine::Example::Scenes::Common::ProcessKeys();
     Scene::update();
 }
 

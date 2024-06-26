@@ -3,7 +3,7 @@
 using namespace SparrowEngine::Components;
 
 void Camera::update() {
-    GameWindow* w = SparrowEngine::GameWindow::GetCurrentActiveWindow();
+    GameWindow* w = SparrowEngine::GameWindow::GetCurrent();
     mat_projection = glm::perspective(
         glm::radians(fov),
         (float)w->width/(float)w->height,

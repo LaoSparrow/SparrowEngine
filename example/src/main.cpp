@@ -15,8 +15,7 @@ int main() {
                                       });
     SparrowEngine::GameWindow window("Engine Example", 1920, 1080);
 
-    auto scene = std::make_shared<Scene4>();
-    window.bind_scene(scene);
+    window.bind_scene(std::make_shared<Scene1>());
 
     SparrowEngine::Engine::RenderingLoop();
 

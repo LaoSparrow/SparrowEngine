@@ -1,14 +1,16 @@
 #include "camera_movement.hpp"
 
 #include "sparrow_engine/game_window.hpp"
+#include "sparrow_engine/input.hpp"
 
 #include "glm/glm.hpp"
 #include "sparrow_engine/time.hpp"
 
 using namespace SparrowEngine::Example::Scripts;
+using Input = SparrowEngine::Input;
 
 void CameraMovement::update() {
-    GLFWwindow *w = SparrowEngine::GameWindow::GetCurrentActiveWindow()->glfw_window;
+    GLFWwindow *w = SparrowEngine::GameWindow::GetCurrent()->glfw_window;
     auto parent = game_object.lock();
     glm::mat4 model_mat = parent->get_model_matrix_in_global();
 
@@ -21,47 +23,36 @@ void CameraMovement::update() {
 
     auto delta_time = (float)SparrowEngine::Time::GetDeltaTime();
     float current_speed = speed;
-    if (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT))
+    if (Input::KeyPressed(GLFW_KEY_LEFT_SHIFT))
         current_speed = acc_speed;
-    if (glfwGetKey(w, GLFW_KEY_W))
+    if (Input::KeyPressed(GLFW_KEY_W))
         parent->transform.position += front * current_speed * delta_time;
-    if (glfwGetKey(w, GLFW_KEY_S))
+    if (Input::KeyPressed(GLFW_KEY_S))
         parent->transform.position -= front * current_speed * delta_time;
-    if (glfwGetKey(w, GLFW_KEY_A))
+    if (Input::KeyPressed(GLFW_KEY_A))
         parent->transform.position -= right * current_speed * delta_time;
-    if (glfwGetKey(w, GLFW_KEY_D))
+    if (Input::KeyPressed(GLFW_KEY_D))
         parent->transform.position += right * current_speed * delta_time;
-    if (glfwGetKey(w, GLFW_KEY_E))
+    if (Input::KeyPressed(GLFW_KEY_E))
         parent->transform.position += up * current_speed * delta_time;
-    if (glfwGetKey(w, GLFW_KEY_Q))
+    if (Input::KeyPressed(GLFW_KEY_Q))
         parent->transform.position -= up * current_speed * delta_time;
 
-    if (glfwGetKey(w, GLFW_KEY_BACKSLASH)) {
-        if (!is_backslash_pressed) {
-            is_cursor_disabled = !is_cursor_disabled;
-            glfwSetInputMode(w, GLFW_CURSOR, is_cursor_disabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-            glfwGetCursorPos(w, &last_cursor_x, &last_cursor_y);
-        }
-        is_backslash_pressed = true;
+    if (Input::KeyTriggered(GLFW_KEY_BACKSLASH)) {
+        Input::SetInputMode(GLFW_CURSOR,
+                            Input::GetInputMode(GLFW_CURSOR) == GLFW_CURSOR_NORMAL ?
+                            GLFW_CURSOR_DISABLED :
+                            GLFW_CURSOR_NORMAL);
     }
-    else
-        is_backslash_pressed = false;
 
-    if (is_cursor_disabled) {
-        double cursor_x, cursor_y;
-        glfwGetCursorPos(w, &cursor_x, &cursor_y);
-        float offset_x = last_cursor_x - cursor_x;
-        float offset_y = last_cursor_y - cursor_y;
-        last_cursor_x = cursor_x;
-        last_cursor_y = cursor_y;
-
-        offset_x *= mouse_sensitivity;
-        offset_y *= mouse_sensitivity;
+    if (Input::GetInputMode(GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+        glm::dvec2 delta = Input::GetDeltaCursorPosition();
+        delta *= mouse_sensitivity;
 
         switch (mode) {
             case CameraMode::fps:
-                yaw += offset_x;
-                pitch += offset_y;
+                yaw -= delta.x;
+                pitch += delta.y;
                 pitch = std::min(std::max(pitch, -90.0f), 90.0f);
 
                 parent->transform.rotation = glm::quat(glm::vec3(
@@ -72,8 +63,8 @@ void CameraMovement::update() {
 
             case CameraMode::free:
                 parent->transform.rotation *=
-                    glm::angleAxis(glm::radians(offset_y), glm::vec3(1.0f, 0.0f, 0.0f)) *
-                    glm::angleAxis(glm::radians(offset_x), glm::vec3(0.0f, 1.0f, 0.0f));
+                    glm::angleAxis(glm::radians((float)delta.y), glm::vec3(1.0f, 0.0f, 0.0f)) *
+                    glm::angleAxis(glm::radians((float)-delta.x), glm::vec3(0.0f, 1.0f, 0.0f));
                 break;
         }
     }

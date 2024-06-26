@@ -149,7 +149,7 @@ void Shader::set_mat4(const char *name, glm::mat4 &value) {
 
 void Shader::push_mats(glm::mat4 model_matrix) {
     use();
-    GameWindow *w = GameWindow::GetCurrentActiveWindow();
+    GameWindow *w = GameWindow::GetCurrent();
     if (field_presented.projection)
         set_mat4("projection", w->mat_projection);
     if (field_presented.view)
