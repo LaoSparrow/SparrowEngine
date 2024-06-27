@@ -11,9 +11,9 @@
 #include <memory>
 #include <string>
 
-namespace SparrowEngine::Components {
+namespace SE::Components {
 
-    class Mesh : public SparrowEngine::Behavior {
+    class Mesh : public SE::Behavior {
     private:
         GLuint vao{0};
         GLuint vbo{0};
@@ -34,7 +34,7 @@ namespace SparrowEngine::Components {
 
         std::shared_ptr<Material> material;
 
-        using SparrowEngine::Behavior::Behavior;
+        using SE::Behavior::Behavior;
 
         Mesh(std::weak_ptr<GameObject> obj, std::initializer_list<Vertex> mesh_data);
 

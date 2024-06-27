@@ -1,9 +1,9 @@
 #include "sparrow_engine/components/camera.hpp"
 
-using namespace SparrowEngine::Components;
+using namespace SE::Components;
 
 void Camera::update() {
-    GameWindow* w = SparrowEngine::GameWindow::GetCurrent();
+    GameWindow* w = SE::GameWindow::GetCurrent();
     mat_projection = glm::perspective(
         glm::radians(fov),
         (float)w->width/(float)w->height,

@@ -1,6 +1,6 @@
 #include "sparrow_engine/time.hpp"
 
-using namespace SparrowEngine;
+using namespace SE;
 
 double Time::last_time;
 double Time::now;

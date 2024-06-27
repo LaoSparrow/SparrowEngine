@@ -1,6 +1,6 @@
 #include "sparrow_engine/components/mesh.hpp"
 
-using namespace SparrowEngine::Components;
+using namespace SE::Components;
 
 void Mesh::allocate_gl_objects() {
     glGenVertexArrays(1, &vao);

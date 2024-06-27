@@ -6,11 +6,11 @@
 #include "glm/glm.hpp"
 #include "sparrow_engine/time.hpp"
 
-using namespace SparrowEngine::Example::Scripts;
-using Input = SparrowEngine::Input;
+using namespace SE::Example::Scripts;
+using Input = SE::Input;
 
 void CameraMovement::update() {
-    GLFWwindow *w = SparrowEngine::GameWindow::GetCurrent()->glfw_window;
+    GLFWwindow *w = SE::GameWindow::GetCurrent()->glfw_window;
     auto parent = game_object.lock();
     glm::mat4 model_mat = parent->get_model_matrix_in_global();
 
@@ -21,7 +21,7 @@ void CameraMovement::update() {
     glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(model_mat * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f))));
     glm::vec3 up = glm::normalize(glm::cross(right, front));
 
-    auto delta_time = (float)SparrowEngine::Time::GetDeltaTime();
+    auto delta_time = (float)SE::Time::GetDeltaTime();
     float current_speed = speed;
     if (Input::KeyPressed(GLFW_KEY_LEFT_SHIFT))
         current_speed = acc_speed;

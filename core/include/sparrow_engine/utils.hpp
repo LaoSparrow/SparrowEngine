@@ -3,8 +3,9 @@
 #include <cstddef>
 #include <utility>
 #include <cstdint>
+#include <functional>
 
-namespace SparrowEngine::Utils {
+namespace SE::Utils {
 
     struct pair_hash {
         template <class T1, class T2>
@@ -16,7 +17,42 @@ namespace SparrowEngine::Utils {
         }
     };
 
-}
+    template<class T = void>
+    class Lazy {
+    private:
+        T value;
+        bool has_initialized {};
+        std::function<T()> factory;
+
+    public:
+        inline explicit Lazy(std::function<T()> factory) : factory(std::move(factory)) {}
+
+        inline T& get() {
+            if (!has_initialized) {
+                has_initialized = true;
+                value = factory();
+            }
+            return value;
+        }
+    };
+
+    template <>
+    class Lazy<void> {
+    private:
+        bool has_initialized {};
+        std::function<void()> factory;
+
+    public:
+        inline explicit Lazy(std::function<void()> factory) : factory(std::move(factory)) {}
+
+        inline void get() {
+            if (!has_initialized) {
+                has_initialized = true;
+                factory();
+            }
+        }
+    };
+};
 
 extern "C++" {
 

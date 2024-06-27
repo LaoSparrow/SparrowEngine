@@ -7,18 +7,18 @@
 #include "scenes/scene4.hpp"
 
 int main() {
-    SparrowEngine::Engine::Initialize({
+    SE::Engine::Initialize({
                                           .opengl = {
                                               .major_version = 4,
                                               .minor_version = 5,
                                           }
                                       });
-    SparrowEngine::GameWindow window("Engine Example", 1920, 1080);
+    SE::GameWindow window("Engine Example", 1920, 1080);
 
     window.bind_scene(std::make_shared<Scene1>());
 
-    SparrowEngine::Engine::RenderingLoop();
+    SE::Engine::RenderingLoop();
 
-    SparrowEngine::GameWindow::Terminate();
+    SE::GameWindow::Terminate();
     return 0;
 }

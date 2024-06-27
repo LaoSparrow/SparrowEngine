@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace SparrowEngine {
+namespace SE {
 
     class GameObject;
 

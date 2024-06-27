@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-namespace SparrowEngine {
+namespace SE {
     class Transform {
     public:
         glm::vec3 position{0.0f, 0.0f, 0.0f};

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-using namespace SparrowEngine;
+using namespace SE;
 
 void Engine::Initialize(SparrowEngineConfig config) {
     GameWindow::Initialize(config.opengl.major_version, config.opengl.minor_version);

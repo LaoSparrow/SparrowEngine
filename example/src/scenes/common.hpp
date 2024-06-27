@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SparrowEngine::Example::Scenes {
+namespace SE::Example::Scenes {
     class Common {
     public:
         Common() = delete;

@@ -4,7 +4,7 @@
 #include "stb_image.h"
 #undef STB_IMAGE_IMPLEMENTATION
 
-using namespace SparrowEngine;
+using namespace SE;
 
 Texture::~Texture() {
     free();

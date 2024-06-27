@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-using namespace SparrowEngine;
+using namespace SE;
 
 void Input::mouse_button_event(int button, int action, int mods) {
     switch (action) {
@@ -48,14 +48,14 @@ void Input::key_event(int key, int scancode, int action, int mods) {
 void Input::pre_update() {
     if (!has_initialized) {
         has_initialized = true;
-        glfwGetCursorPos(SparrowEngine::GameWindow::GetCurrent()->glfw_window, &cursor_pos.x, &cursor_pos.y);
-        cursor_pos.y = SparrowEngine::GameWindow::GetCurrent()->height - cursor_pos.y;
+        glfwGetCursorPos(SE::GameWindow::GetCurrent()->glfw_window, &cursor_pos.x, &cursor_pos.y);
+        cursor_pos.y = SE::GameWindow::GetCurrent()->height - cursor_pos.y;
         last_cursor_pos = cursor_pos;
         return;
     }
     last_cursor_pos = cursor_pos;
-    glfwGetCursorPos(SparrowEngine::GameWindow::GetCurrent()->glfw_window, &cursor_pos.x, &cursor_pos.y);
-    cursor_pos.y = SparrowEngine::GameWindow::GetCurrent()->height - cursor_pos.y;
+    glfwGetCursorPos(SE::GameWindow::GetCurrent()->glfw_window, &cursor_pos.x, &cursor_pos.y);
+    cursor_pos.y = SE::GameWindow::GetCurrent()->height - cursor_pos.y;
     delta_cursor_pos = cursor_pos - last_cursor_pos;
 }
 
@@ -74,53 +74,53 @@ Input::Input() {
 }
 
 void Input::SetInputMode(int mode, int value) {
-    glfwSetInputMode(SparrowEngine::GameWindow::GetCurrent()->glfw_window, mode, value);
+    glfwSetInputMode(SE::GameWindow::GetCurrent()->glfw_window, mode, value);
 }
 
 int Input::GetInputMode(int mode) {
-    return glfwGetInputMode(SparrowEngine::GameWindow::GetCurrent()->glfw_window, mode);
+    return glfwGetInputMode(SE::GameWindow::GetCurrent()->glfw_window, mode);
 }
 
 glm::dvec2 Input::GetCursorPosition() {
-    return SparrowEngine::GameWindow::GetCurrent()->input_system.cursor_pos;
+    return SE::GameWindow::GetCurrent()->input_system.cursor_pos;
 }
 
 glm::dvec2 Input::GetDeltaCursorPosition() {
-    return SparrowEngine::GameWindow::GetCurrent()->input_system.delta_cursor_pos;
+    return SE::GameWindow::GetCurrent()->input_system.delta_cursor_pos;
 }
 
 bool Input::MouseButtonReleased(int button) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.mouse_button_states[button] & Input::KeyStates::Release);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.mouse_button_states[button] & Input::KeyStates::Release);
 }
 
 bool Input::MouseButtonPressed(int button) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.mouse_button_states[button] & Input::KeyStates::Press);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.mouse_button_states[button] & Input::KeyStates::Press);
 }
 
 bool Input::MouseButtonTriggered(int button) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.mouse_button_states[button] & Input::KeyStates::Trigger);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.mouse_button_states[button] & Input::KeyStates::Trigger);
 }
 
 bool Input::MouseButtonReleaseTriggered(int button) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.mouse_button_states[button] & Input::KeyStates::ReleaseTrigger);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.mouse_button_states[button] & Input::KeyStates::ReleaseTrigger);
 }
 
 bool Input::KeyReleased(int key) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::Release);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::Release);
 }
 
 bool Input::KeyPressed(int key) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::Press);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::Press);
 }
 
 bool Input::KeyRepeat(int key) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::Repeat);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::Repeat);
 }
 
 bool Input::KeyTriggered(int key) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::Trigger);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::Trigger);
 }
 
 bool Input::KeyReleaseTriggered(int key) {
-    return (bool)(SparrowEngine::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::ReleaseTrigger);
+    return (bool)(SE::GameWindow::GetCurrent()->input_system.key_states[key] & Input::KeyStates::ReleaseTrigger);
 }

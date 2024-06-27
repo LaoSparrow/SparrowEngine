@@ -1,6 +1,6 @@
 #include "sparrow_engine/shader.hpp"
 
-using namespace SparrowEngine;
+using namespace SE;
 
 void Shader::load(std::string vertex_path, std::string fragment_path) {
     if (id)
@@ -164,7 +164,7 @@ void Shader::push_mats(glm::mat4 model_matrix) {
         set_vec3("view_position", glm::inverse(w->mat_view)[3]);
 }
 
-std::unordered_map<std::pair<std::string, std::string>, std::weak_ptr<Shader>, SparrowEngine::Utils::pair_hash> Shader::shader_cache;
+std::unordered_map<std::pair<std::string, std::string>, std::weak_ptr<Shader>, SE::Utils::pair_hash> Shader::shader_cache;
 
 std::shared_ptr<Shader> Shader::create_shader(std::string vs_src, std::string fs_src) {
     auto cache = shader_cache.find({ vs_src, fs_src });

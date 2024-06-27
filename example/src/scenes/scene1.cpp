@@ -15,17 +15,17 @@
 #include "../scripts/camera_movement.hpp"
 #include "../constants.hpp"
 
-namespace Components = SparrowEngine::Components;
-namespace Scripts = SparrowEngine::Example::Scripts;
+namespace Components = SE::Components;
+namespace Scripts = SE::Example::Scripts;
 
-using GameObject = SparrowEngine::GameObject;
-using Material = SparrowEngine::Material;
-using Shader = SparrowEngine::Shader;
-using Constants = SparrowEngine::Example::Constants;
-using Texture = SparrowEngine::Texture;
+using GameObject = SE::GameObject;
+using Material = SE::Material;
+using Shader = SE::Shader;
+using Constants = SE::Example::Constants;
+using Texture = SE::Texture;
 
 void BackgroundObject::render() {
-    double now = SparrowEngine::Time::GetTimeNow();
+    double now = SE::Time::GetTimeNow();
     glClearColor(sin(now) * 0.5f + 0.5f, cos(now) * 0.5f + 0.5f, sin(now * 2) * 0.5f + 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     GameObject::render();
@@ -101,7 +101,7 @@ void Scene1::start() {
 }
 
 void Scene1::update() {
-    SparrowEngine::Example::Scenes::Common::ProcessKeys();
+    SE::Example::Scenes::Common::ProcessKeys();
     Scene::update();
 }
 

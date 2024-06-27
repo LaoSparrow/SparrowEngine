@@ -7,7 +7,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace SparrowEngine {
+namespace SE {
 
     class Texture {
     public:

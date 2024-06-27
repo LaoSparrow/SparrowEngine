@@ -7,9 +7,13 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-using namespace SparrowEngine;
+using namespace SE;
 
-bool GameWindow::is_glad_initialized = false;
+SE::Utils::Lazy<> GameWindow::glad_initialization {[]() {
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        fmt::println("Failed to Initialize GLAD");
+    }
+}};
 
 std::set<GameWindow *> GameWindow::active_windows;
 GameWindow* GameWindow::current_active_window;
@@ -53,12 +57,8 @@ GameWindow::GameWindow(const char *title, int width, int height)
     glfwSetKeyCallback(glfw_window, key_callback);
 //        glfwSwapInterval(1);
 
-    if (!is_glad_initialized) {
-        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-            fmt::println("Failed to Initialize GLAD");
-        }
-        is_glad_initialized = true;
-    }
+    glad_initialization.get();
+
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
 

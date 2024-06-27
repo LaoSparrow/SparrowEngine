@@ -1,6 +1,6 @@
 #include "sparrow_engine/game_object.hpp"
 
-using namespace SparrowEngine;
+using namespace SE;
 
 GameObject::GameObject(std::string name) : name(std::move(name)) {
 

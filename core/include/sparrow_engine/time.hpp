@@ -3,7 +3,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-namespace SparrowEngine {
+namespace SE {
     class Time {
     private:
         static double last_time;

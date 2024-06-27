@@ -8,9 +8,9 @@
 #include "glm/gtc/quaternion.hpp"
 
 
-namespace SparrowEngine::Components {
+namespace SE::Components {
 
-    class Light : public SparrowEngine::Behavior {
+    class Light : public SE::Behavior {
     private:
         int data_slot{-1};
         std::weak_ptr<Lighting> lighting_parent;
@@ -34,7 +34,7 @@ namespace SparrowEngine::Components {
 
         Lighting::LightData& get_light();
 
-        using SparrowEngine::Behavior::Behavior;
+        using SE::Behavior::Behavior;
         ~Light();
     };
 }

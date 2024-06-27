@@ -9,7 +9,7 @@
 #include <any>
 #include <utility>
 
-namespace SparrowEngine {
+namespace SE {
 
     class Material {
     public:

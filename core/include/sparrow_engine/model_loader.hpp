@@ -14,7 +14,7 @@
 #include <iostream>
 #include <filesystem>
 
-namespace SparrowEngine {
+namespace SE {
 
     using Vertex = Components::Mesh::Vertex;
 

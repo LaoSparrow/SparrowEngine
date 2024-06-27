@@ -2,14 +2,10 @@
 
 #include <ranges>
 
-using namespace SparrowEngine;
+using namespace SE;
 
 void Scene::new_frame() {
-    if (!has_started) {
-        has_started = true;
-        lighting->initialize();
-        start();
-    }
+    start_up.get();
     lighting->use();
     update();
 }

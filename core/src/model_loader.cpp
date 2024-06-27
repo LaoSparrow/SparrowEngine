@@ -1,6 +1,6 @@
 #include "sparrow_engine/model_loader.hpp"
 
-using namespace SparrowEngine;
+using namespace SE;
 
 void ModelLoader::load_model(std::string path, aiPostProcessSteps post_processes) {
     Assimp::Importer importer;

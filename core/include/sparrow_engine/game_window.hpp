@@ -3,6 +3,7 @@
 #include "scene.hpp"
 #include "game_object.hpp"
 #include "input.hpp"
+#include "utils.hpp"
 
 #include <set>
 #include <functional>
@@ -14,11 +15,11 @@
 
 // TODO: Migrate rendering, updating to Engine::RenderingLoop
 
-namespace SparrowEngine {
+namespace SE {
 
     class GameWindow {
     private:
-        static bool is_glad_initialized;
+        static SE::Utils::Lazy<> glad_initialization;
         static std::set<GameWindow*> active_windows;
         static GameWindow* current_active_window;
 
@@ -37,7 +38,7 @@ namespace SparrowEngine {
         std::function<void(GameWindow&)> on_draw_callback;
         int width, height;
         glm::mat4 mat_projection, mat_view;
-        SparrowEngine::Input input_system{};
+        SE::Input input_system{};
 
         explicit GameWindow(const char *title = "OpenGL Window", int width = 800, int height = 600);
         ~GameWindow();

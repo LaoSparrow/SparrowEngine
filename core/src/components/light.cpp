@@ -1,6 +1,6 @@
 #include "sparrow_engine/components/light.hpp"
 
-using namespace SparrowEngine::Components;
+using namespace SE::Components;
 
 void Light::start() {
     lighting_parent = Scene::GetCurrent()->lighting;
@@ -49,7 +49,7 @@ Light::~Light() {
     data_slot = -1;
 }
 
-SparrowEngine::Lighting::LightData& Light::get_light() {
+SE::Lighting::LightData& Light::get_light() {
     auto lighting = lighting_parent.lock();
     // TODO: return sth when lighting doesn't present
 

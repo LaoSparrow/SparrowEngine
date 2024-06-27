@@ -1,6 +1,6 @@
 #include "sparrow_engine/material.hpp"
 
-using namespace SparrowEngine;
+using namespace SE;
 
 Material::Material(std::shared_ptr<Shader> shader, std::initializer_list<decltype(parameters)::value_type> params_init)
     : shader(std::move(shader)), parameters(params_init) {}

@@ -4,7 +4,7 @@
 #include "imgui.h"
 #include "glm/gtc/type_ptr.hpp"
 
-using namespace SparrowEngine::Example::Scripts;
+using namespace SE::Example::Scripts;
 
 void TransformModification::start() {
     auto parent_obj = game_object.lock();

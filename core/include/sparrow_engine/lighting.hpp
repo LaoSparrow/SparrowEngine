@@ -8,7 +8,7 @@
 
 #define LIGHTING_DATA_DEFAULT_CAPACITY 32
 
-namespace SparrowEngine {
+namespace SE {
 
     class Lighting {
     private:

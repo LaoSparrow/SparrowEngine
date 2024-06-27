@@ -5,14 +5,14 @@
 #include "glm/gtc/quaternion.hpp"
 #include "glm/vec3.hpp"
 
-namespace SparrowEngine::Example::Scripts {
-    class TransformModification : public SparrowEngine::Behavior {
+namespace SE::Example::Scripts {
+    class TransformModification : public SE::Behavior {
     private:
         glm::vec3 euler_angle;
         glm::quat orig_quat;
 
     public:
-        using SparrowEngine::Behavior::Behavior;
+        using SE::Behavior::Behavior;
 
         void start() override;
         void update() override;

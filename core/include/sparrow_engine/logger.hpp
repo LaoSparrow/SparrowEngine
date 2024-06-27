@@ -2,7 +2,7 @@
 
 #include "glad/glad.h"
 
-namespace SparrowEngine {
+namespace SE {
 
     class Logger {
     private:

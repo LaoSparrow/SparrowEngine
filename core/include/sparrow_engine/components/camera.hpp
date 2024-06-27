@@ -7,11 +7,11 @@
 #include "glm/matrix.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace SparrowEngine::Components {
+namespace SE::Components {
 
-    class Camera : public SparrowEngine::Behavior {
+    class Camera : public SE::Behavior {
     public:
-        using SparrowEngine::Behavior::Behavior;
+        using SE::Behavior::Behavior;
 
         float fov = 45.0f;
 

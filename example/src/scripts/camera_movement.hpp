@@ -3,8 +3,8 @@
 #include "sparrow_engine/behavior.hpp"
 
 
-namespace SparrowEngine::Example::Scripts {
-    class CameraMovement : public SparrowEngine::Behavior {
+namespace SE::Example::Scripts {
+    class CameraMovement : public SE::Behavior {
     private:
         double last_cursor_x = 0.0, last_cursor_y = 0.0;
         bool is_cursor_disabled = false;
@@ -22,7 +22,7 @@ namespace SparrowEngine::Example::Scripts {
         float yaw = 0.0f;
         float pitch = 0.0f;
 
-        using SparrowEngine::Behavior::Behavior;
+        using SE::Behavior::Behavior;
 
         void update() override;
     };

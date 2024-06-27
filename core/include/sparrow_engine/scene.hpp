@@ -2,15 +2,19 @@
 
 #include "game_object.hpp"
 #include "lighting.hpp"
+#include "utils.hpp"
 
 #include <memory>
 #include <stack>
 
-namespace SparrowEngine {
+namespace SE {
 
     class Scene : public std::enable_shared_from_this<Scene> {
     private:
-        bool has_started = false;
+        SE::Utils::Lazy<> start_up {[this]() {
+            lighting->initialize();
+            start();
+        }};
         std::stack<std::shared_ptr<GameObject>> obj_stack;
 
         static std::shared_ptr<Scene> current_scene;

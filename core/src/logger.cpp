@@ -1,7 +1,7 @@
 #include "sparrow_engine/logger.hpp"
 #include <cstdio>
 
-using namespace SparrowEngine;
+using namespace SE;
 
 void Logger::gl_message_callback(GLenum source,
                                  GLenum type,

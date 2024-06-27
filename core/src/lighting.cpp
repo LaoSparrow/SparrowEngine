@@ -1,6 +1,6 @@
 #include "sparrow_engine/lighting.hpp"
 
-using namespace SparrowEngine;
+using namespace SE;
 
 void Lighting::reallocate_and_update_data() {
     size_t size_before_reallocation = light_data.size();

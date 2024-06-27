@@ -12,13 +12,13 @@
 #include "../scripts/transform_modification.hpp"
 #include "../scripts/camera_movement.hpp"
 
-namespace Components = SparrowEngine::Components;
-namespace Scripts = SparrowEngine::Example::Scripts;
+namespace Components = SE::Components;
+namespace Scripts = SE::Example::Scripts;
 
-using GameObject = SparrowEngine::GameObject;
-using Material = SparrowEngine::Material;
-using Shader = SparrowEngine::Shader;
-using Constants = SparrowEngine::Example::Constants;
+using GameObject = SE::GameObject;
+using Material = SE::Material;
+using Shader = SE::Shader;
+using Constants = SE::Example::Constants;
 
 void Scene2::start() {
     scene_root->children.emplace_back(
@@ -39,13 +39,13 @@ void Scene2::start() {
             ->configure_component<Components::Mesh>([](auto m) -> void {
                 m->material = Material::create_material(
                     Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/object_light_shaderv2.fs.glsl"), {
-                        { "light.position", glm::vec3(1.2f, 1.0f, 2.0f) },
-                        { "light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f) },
-                        { "light.diffuse",  glm::vec3(0.5f, 0.5f, 0.5f) },
-                        { "light.specular", glm::vec3(1.0f, 1.0f, 1.0f) },
-                        { "material.diffuse", SparrowEngine::Texture::create_texture("../../../../example/resources/textures/container2.png") },
-                        { "material.specular", SparrowEngine::Texture::create_texture("../../../../example/resources/textures/container2_specular.png") },
-                        { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                        { "light.position",     glm::vec3(1.2f, 1.0f, 2.0f) },
+                        { "light.ambient",      glm::vec3(0.2f, 0.2f, 0.2f) },
+                        { "light.diffuse",      glm::vec3(0.5f, 0.5f, 0.5f) },
+                        { "light.specular",     glm::vec3(1.0f, 1.0f, 1.0f) },
+                        { "material.diffuse",   SE::Texture::create_texture("../../../../example/resources/textures/container2.png") },
+                        { "material.specular",  SE::Texture::create_texture("../../../../example/resources/textures/container2_specular.png") },
+                        { "material.emission",  SE::Texture::create_texture("se://texture?color=000000") },
                         { "material.shininess", 32.0f }
                     });
             })
@@ -69,11 +69,11 @@ void Scene2::start() {
             })
     );
 
-    SparrowEngine::Scene::start();
+    SE::Scene::start();
 }
 
 void Scene2::update() {
-    SparrowEngine::Example::Scenes::Common::ProcessKeys();
-    SparrowEngine::Scene::update();
+    SE::Example::Scenes::Common::ProcessKeys();
+    SE::Scene::update();
 }
 

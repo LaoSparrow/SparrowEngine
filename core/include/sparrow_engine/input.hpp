@@ -9,7 +9,7 @@
 
 #include "glm/vec2.hpp"
 
-namespace SparrowEngine {
+namespace SE {
     class Input {
     public:
         enum class KeyStates : uint8_t {
@@ -59,4 +59,4 @@ namespace SparrowEngine {
     };
 }
 
-DEFINE_ENUM_FLAG_OPERATORS(SparrowEngine::Input::KeyStates)
+DEFINE_ENUM_FLAG_OPERATORS(SE::Input::KeyStates)

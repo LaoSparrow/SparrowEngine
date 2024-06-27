@@ -1,6 +1,6 @@
 #include "sparrow_engine/behavior.hpp"
 
-using namespace SparrowEngine;
+using namespace SE;
 
 Behavior::Behavior(std::weak_ptr<GameObject> obj) {
     game_object = std::move(obj);

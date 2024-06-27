@@ -16,41 +16,41 @@
 
 #include <memory>
 
-namespace Components = SparrowEngine::Components;
-namespace Scripts = SparrowEngine::Example::Scripts;
+namespace Components = SE::Components;
+namespace Scripts = SE::Example::Scripts;
 
-using GameObject = SparrowEngine::GameObject;
-using Material = SparrowEngine::Material;
-using Shader = SparrowEngine::Shader;
-using Constants = SparrowEngine::Example::Constants;
+using GameObject = SE::GameObject;
+using Material = SE::Material;
+using Shader = SE::Shader;
+using Constants = SE::Example::Constants;
 
 void Scene4::start() {
-    using Mesh = SparrowEngine::Components::Mesh;
+    using Mesh = SE::Components::Mesh;
 
     scene_root->add_child_object("Directional Light");
     scene_root->configure_child_object([](auto obj) {
         obj->transform.set_euler_angles(100.0f, 10.0f, 0.0f);
 
-        obj->add_component<SparrowEngine::Components::Light>();
-        obj->configure_component<SparrowEngine::Components::Light>([](std::shared_ptr<SparrowEngine::Components::Light> l) {
-            l->type = SparrowEngine::Lighting::LightType::DirectionalLight;
+        obj->add_component<SE::Components::Light>();
+        obj->configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
+            l->type = SE::Lighting::LightType::DirectionalLight;
             l->ambient = glm::vec3(0.3f, 0.3f, 0.3f);
             l->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
             l->specular = glm::vec3(1.0f, 1.0f, 1.0f);
         });
 
         obj->add_child_object("Sun");
-        obj->configure_child_object([](std::shared_ptr<SparrowEngine::GameObject> indicator) {
+        obj->configure_child_object([](std::shared_ptr<SE::GameObject> indicator) {
             indicator->transform.position = glm::vec3(0.0f, 0.0f, -50.0f);
             indicator->transform.scale = glm::vec3(3.0f);
 
-            indicator->add_component<Mesh>(SparrowEngine::Example::Constants::cube);
+            indicator->add_component<Mesh>(SE::Example::Constants::cube);
             indicator->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                m->material = SparrowEngine::Material::create_material(
-                    SparrowEngine::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                        { "material.diffuse", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
-                        { "material.specular", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=FFFFFF") },
+                m->material = SE::Material::create_material(
+                    SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                        { "material.diffuse",   SE::Texture::create_texture("se://texture?color=000000") },
+                        { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
+                        { "material.emission",  SE::Texture::create_texture("se://texture?color=FFFFFF") },
                         { "material.shininess", 1.0f }
                     });
             });
@@ -59,18 +59,18 @@ void Scene4::start() {
 
     scene_root->add_child_object("Backpack");
     scene_root->configure_child_object([](auto obj) {
-        SparrowEngine::ModelLoader loader;
+        SE::ModelLoader loader;
         loader.load_model("../../../../example/resources/models/backpack/backpack.obj", aiProcess_FlipUVs);
         for (const auto &m : loader.meshes) {
             obj->add_component<Mesh>();
             obj->configure_component<Mesh>([&m](std::shared_ptr<Mesh> mc) {
                 mc->vertices = m.vertices;
                 mc->vertex_indices = m.indices;
-                mc->material = SparrowEngine::Material::create_material(
-                    SparrowEngine::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                        { "material.diffuse", SparrowEngine::Texture::create_texture(m.texture_paths.diffuse[0]) },
-                        { "material.specular", SparrowEngine::Texture::create_texture(m.texture_paths.specular[0]) },
-                        { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
+                mc->material = SE::Material::create_material(
+                    SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                        { "material.diffuse",   SE::Texture::create_texture(m.texture_paths.diffuse[0]) },
+                        { "material.specular",  SE::Texture::create_texture(m.texture_paths.specular[0]) },
+                        { "material.emission",  SE::Texture::create_texture("se://texture?color=000000") },
                         { "material.shininess", 1.0f }
                     });
             });
@@ -85,31 +85,31 @@ void Scene4::start() {
 
         obj->add_component<Scripts::CameraMovement>();
 
-        obj->add_component<SparrowEngine::Components::Camera>();
-        obj->configure_component<SparrowEngine::Components::Camera>([](auto c) {
+        obj->add_component<SE::Components::Camera>();
+        obj->configure_component<SE::Components::Camera>([](auto c) {
             c->fov = 60.0f;
         });
 
 //            obj->add_child_object("Spot Light 1");
-//            obj->configure_child_object([](std::shared_ptr<SparrowEngine::GameObject> light_obj) {
+//            obj->configure_child_object([](std::shared_ptr<SE::GameObject> light_obj) {
 //                light_obj->transform.position = glm::vec3(0.4f, -0.2f, -0.5f);
 //                light_obj->transform.set_euler_angles(0.0f, 180.0f, 0.0f);
 //                light_obj->transform.scale = glm::vec3(0.1f);
 //
-//                light_obj->add_component<Mesh>(SparrowEngine::Example::Constants::cube);
+//                light_obj->add_component<Mesh>(SE::Example::Constants::cube);
 //                light_obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-//                    m->material = SparrowEngine::Material::create_material(
-//                        SparrowEngine::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-//                            { "material.diffuse", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
-//                            { "material.specular", SparrowEngine::Texture::create_texture("se://texture?color=000000") },
-//                            { "material.emission", SparrowEngine::Texture::create_texture("se://texture?color=FFFFFF") },
+//                    m->material = SE::Material::create_material(
+//                        SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+//                            { "material.diffuse", SE::Texture::create_texture("se://texture?color=000000") },
+//                            { "material.specular", SE::Texture::create_texture("se://texture?color=000000") },
+//                            { "material.emission", SE::Texture::create_texture("se://texture?color=FFFFFF") },
 //                            { "material.shininess", 1.0f }
 //                        });
 //                });
 //
-//                light_obj->add_component<SparrowEngine::Components::Light>();
-//                light_obj->configure_component<SparrowEngine::Components::Light>([](std::shared_ptr<SparrowEngine::Components::Light> l) {
-//                    l->type = SparrowEngine::Lighting::LightType::SpotLight;
+//                light_obj->add_component<SE::Components::Light>();
+//                light_obj->configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
+//                    l->type = SE::Lighting::LightType::SpotLight;
 ////                    l->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
 //                    l->diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 //                    l->specular = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -122,12 +122,12 @@ void Scene4::start() {
 //            });
     });
 
-    SparrowEngine::Scene::start();
+    SE::Scene::start();
 }
 
 void Scene4::update() {
-    SparrowEngine::Example::Scenes::Common::ProcessKeys();
-    SparrowEngine::Scene::update();
+    SE::Example::Scenes::Common::ProcessKeys();
+    SE::Scene::update();
 }
 
 
