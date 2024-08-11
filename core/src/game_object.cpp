@@ -12,17 +12,17 @@ GameObject::GameObject(std::weak_ptr<GameObject> parent, std::string name)
 
 }
 
-void GameObject::start() {
+void GameObject::pre_start() {}
+void GameObject::start() {}
+void GameObject::post_start() {}
 
-}
+void GameObject::pre_update() {}
+void GameObject::update() {}
+void GameObject::post_update() {}
 
-void GameObject::update() {
-
-}
-
-void GameObject::render() {
-
-}
+void GameObject::pre_render() {}
+void GameObject::render() {}
+void GameObject::post_render() {}
 
 std::shared_ptr<GameObject> GameObject::configure_child_object(std::function<void(std::shared_ptr<GameObject>)> options) {
     options(std::static_pointer_cast<GameObject>(children.back()));

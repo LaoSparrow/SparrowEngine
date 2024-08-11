@@ -1,10 +1,7 @@
 #include "sparrow_engine/engine.hpp"
 #include "sparrow_engine/game_window.hpp"
 
-#include "scenes/scene1.hpp"
-#include "scenes/scene2.hpp"
-#include "scenes/scene3.hpp"
-#include "scenes/scene4.hpp"
+#include "scenes/kobe.hpp"
 
 int main() {
     SE::Engine::Initialize({
@@ -15,7 +12,7 @@ int main() {
                                       });
     SE::GameWindow window("Engine Example", 1920, 1080);
 
-    window.bind_scene(std::make_shared<Scene1>());
+    window.bind_scene(std::make_shared<KobeScene>());
 
     SE::Engine::RenderingLoop();
 

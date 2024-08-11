@@ -26,11 +26,13 @@ namespace SE {
         glm::dvec2 last_cursor_pos {};
         glm::dvec2 cursor_pos {};
         glm::dvec2 delta_cursor_pos {};
+        glm::dvec2 delta_mouse_scroll {};
         KeyStates mouse_button_states[GLFW_MOUSE_BUTTON_LAST + 1] {};
         KeyStates key_states[GLFW_KEY_LAST + 1] {};
 
         void mouse_button_event(int button, int action, int mods);
         void key_event(int key, int scancode, int action, int mods);
+        void scroll_callback(double x_offset, double y_offset);
         void pre_update();
         void post_update();
 
@@ -42,6 +44,8 @@ namespace SE {
 
         static glm::dvec2 GetCursorPosition();
         static glm::dvec2 GetDeltaCursorPosition();
+
+        static glm::dvec2 GetDeltaMouseScroll();
 
         static bool MouseButtonReleased(int button);
         static bool MouseButtonPressed(int button);

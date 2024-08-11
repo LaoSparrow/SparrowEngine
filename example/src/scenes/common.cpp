@@ -3,6 +3,7 @@
 #include "scene2.hpp"
 #include "scene3.hpp"
 #include "scene4.hpp"
+#include "kobe.hpp"
 
 #include "sparrow_engine/game_window.hpp"
 #include "sparrow_engine/input.hpp"
@@ -32,5 +33,9 @@ void Common::ProcessKeys() {
     if (Input::KeyTriggered(GLFW_KEY_4)) {
         fmt::println("Switching to scene 4");
         SE::Scene::SwitchTo(std::make_shared<Scene4>());
+    }
+    if (Input::KeyTriggered(GLFW_KEY_5)) {
+        fmt::println("Switching to KobeScene");
+        SE::Scene::SwitchTo(std::make_shared<KobeScene>());
     }
 }

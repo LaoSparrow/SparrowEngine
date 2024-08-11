@@ -45,6 +45,10 @@ void Input::key_event(int key, int scancode, int action, int mods) {
     }
 }
 
+void Input::scroll_callback(double x_offset, double y_offset) {
+    delta_mouse_scroll = glm::dvec2(x_offset, y_offset);
+}
+
 void Input::pre_update() {
     if (!has_initialized) {
         has_initialized = true;
@@ -66,6 +70,7 @@ void Input::post_update() {
     for (int i = 0; i <= GLFW_KEY_LAST; i++) {
         key_states[i] &= ~(KeyStates::Repeat | KeyStates::Trigger | KeyStates::ReleaseTrigger);
     }
+    delta_mouse_scroll = glm::dvec2(0.0);
 }
 
 Input::Input() {
@@ -87,6 +92,10 @@ glm::dvec2 Input::GetCursorPosition() {
 
 glm::dvec2 Input::GetDeltaCursorPosition() {
     return SE::GameWindow::GetCurrent()->input_system.delta_cursor_pos;
+}
+
+glm::dvec2 Input::GetDeltaMouseScroll() {
+    return SE::GameWindow::GetCurrent()->input_system.delta_mouse_scroll;
 }
 
 bool Input::MouseButtonReleased(int button) {

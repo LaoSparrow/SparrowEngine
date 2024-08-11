@@ -7,7 +7,7 @@ void Camera::update() {
     mat_projection = glm::perspective(
         glm::radians(fov),
         (float)w->width/(float)w->height,
-        0.1f, 100.0f);
+        0.1f, 10000.0f);
     auto obj = game_object.lock();
     glm::mat4 model_mat = obj->get_model_matrix_in_global();
 

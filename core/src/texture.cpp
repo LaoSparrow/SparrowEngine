@@ -54,10 +54,10 @@ void Texture::load(const std::string &res_url) {
     if (data) {
         glTexImage2D(GL_TEXTURE_2D,
                      0, // mipmap level
-                     res_url.ends_with(".png") ? GL_RGBA : GL_RGB,
+                     nrChannels == 4 ? GL_RGBA : GL_RGB,
                      width, height,
                      0, // always zero
-                     res_url.ends_with(".png") ? GL_RGBA : GL_RGB,
+                     nrChannels == 4 ? GL_RGBA : GL_RGB,
                      GL_UNSIGNED_BYTE,
                      data);
         glGenerateMipmap(GL_TEXTURE_2D);

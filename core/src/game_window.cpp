@@ -42,6 +42,13 @@ void GameWindow::key_callback(GLFWwindow *window, int key, int scancode, int act
     }
 }
 
+void GameWindow::scroll_callback(GLFWwindow *window, double x_offset, double y_offset) {
+    for (auto w : active_windows
+                  | std::views::filter([&window] (auto x) { return x->glfw_window == window;})) {
+        w->input_system.scroll_callback(x_offset, y_offset);
+    }
+}
+
 GameWindow::GameWindow(const char *title, int width, int height)
         : on_draw_callback([this](const GameWindow &w) -> void { on_draw(); }){
     glfw_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
@@ -55,7 +62,8 @@ GameWindow::GameWindow(const char *title, int width, int height)
     glfwSetFramebufferSizeCallback(glfw_window, framebuffer_size_callback);
     glfwSetMouseButtonCallback(glfw_window, mouse_button_callback);
     glfwSetKeyCallback(glfw_window, key_callback);
-//        glfwSwapInterval(1);
+    glfwSetScrollCallback(glfw_window, scroll_callback);
+    glfwSwapInterval(1);
 
     glad_initialization.get();
 

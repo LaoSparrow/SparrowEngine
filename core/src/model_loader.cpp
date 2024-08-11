@@ -1,13 +1,14 @@
 #include "sparrow_engine/model_loader.hpp"
 
+#include "fmt/core.h"
+
 using namespace SE;
 
 void ModelLoader::load_model(std::string path, aiPostProcessSteps post_processes) {
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | post_processes);
-    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-    {
-        std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+        fmt::println("SE::ModelLoader::load_model failed to load {}: {}", path, importer.GetErrorString());
         return;
     }
     directory = std::filesystem::path(path).parent_path().string();

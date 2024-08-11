@@ -24,11 +24,17 @@ namespace SE {
         explicit GameObject(std::string name);
         explicit GameObject(std::weak_ptr<GameObject> parent, std::string name);
 
+        virtual void pre_start();
         virtual void start();
+        virtual void post_start();
 
+        virtual void pre_update();
         virtual void update();
+        virtual void post_update();
 
+        virtual void pre_render();
         virtual void render();
+        virtual void post_render();
 
         template<class BehaviorT, class ...Args>
         std::shared_ptr<GameObject> add_component(Args... args) {
