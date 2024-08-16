@@ -4,10 +4,19 @@ using namespace SE::Components;
 
 void Camera::update() {
     GameWindow* w = SE::GameWindow::GetCurrent();
-    mat_projection = glm::perspective(
-        glm::radians(fov),
-        (float)w->width/(float)w->height,
-        0.1f, 10000.0f);
+    if (type == Perspective) {
+        mat_projection = glm::perspective(
+            glm::radians(fov),
+            (float)w->width/(float)w->height,
+            near, far);
+    }
+    else {
+        float width = fov * (float)w->width/(float)w->height;
+        mat_projection = glm::ortho(
+            -width/2, width/2,
+            -fov/2, fov/2,
+            near, far);
+    }
     auto obj = game_object.lock();
     glm::mat4 model_mat = obj->get_model_matrix_in_global();
 
