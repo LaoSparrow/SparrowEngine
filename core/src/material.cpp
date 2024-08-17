@@ -1,4 +1,5 @@
 #include "sparrow_engine/material.hpp"
+#include "sparrow_engine/rendering_texture.hpp"
 
 using namespace SE;
 
@@ -14,6 +15,16 @@ void Material::use() {
 
         if (value.type() == typeid(std::shared_ptr<Texture>)) {
             auto t = std::any_cast<std::shared_ptr<Texture>>(value);
+
+            shader->set_int(field_name.c_str(), texture_index);
+            glActiveTexture(GL_TEXTURE0 + texture_index);
+            t->use();
+
+            texture_index++;
+            continue;
+        }
+        if (value.type() == typeid(std::shared_ptr<RenderingTexture>)) {
+            auto t = std::any_cast<std::shared_ptr<RenderingTexture>>(value);
 
             shader->set_int(field_name.c_str(), texture_index);
             glActiveTexture(GL_TEXTURE0 + texture_index);
@@ -49,6 +60,6 @@ void Material::use() {
     }
 }
 
-std::shared_ptr<Material> Material::create_material(std::shared_ptr<Shader> shader, std::initializer_list<decltype(parameters)::value_type> init_list) {
+std::shared_ptr<Material> Material::create(std::shared_ptr<Shader> shader, std::initializer_list<decltype(parameters)::value_type> init_list) {
     return std::move(std::make_shared<Material>(std::move(shader), init_list));
 }

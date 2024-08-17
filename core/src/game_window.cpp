@@ -20,7 +20,7 @@ GameWindow* GameWindow::current_active_window;
 
 void GameWindow::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glfwMakeContextCurrent(window);
-    glViewport(0, 0, width, height);
+//    glViewport(0, 0, width, height);
     for (auto w : active_windows
         | std::views::filter([&window] (auto x) { return x->glfw_window == window;})) {
         w->width = width;
@@ -75,6 +75,8 @@ GameWindow::GameWindow(const char *title, int width, int height)
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(glfw_window, true);
     ImGui_ImplOpenGL3_Init("#version 430");
+
+    default_framebuffer = Framebuffer::create(true);
 
     active_windows.insert(this);
 }

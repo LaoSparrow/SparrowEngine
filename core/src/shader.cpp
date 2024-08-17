@@ -151,9 +151,9 @@ void Shader::push_mats(glm::mat4 model_matrix) {
     use();
     GameWindow *w = GameWindow::GetCurrent();
     if (field_presented.projection)
-        set_mat4("projection", w->mat_projection);
+        set_mat4("projection", Pipeline::current.mat_projection);
     if (field_presented.view)
-        set_mat4("view", w->mat_view);
+        set_mat4("view", Pipeline::current.mat_view);
     if (field_presented.model)
         set_mat4("model", model_matrix);
     if (field_presented.normal_matrix) {
@@ -161,12 +161,12 @@ void Shader::push_mats(glm::mat4 model_matrix) {
         set_mat3("normal_matrix", normal_matrix);
     }
     if (field_presented.view_position)
-        set_vec3("view_position", glm::inverse(w->mat_view)[3]);
+        set_vec3("view_position", glm::inverse(Pipeline::current.mat_view)[3]);
 }
 
 std::unordered_map<std::pair<std::string, std::string>, std::weak_ptr<Shader>, SE::Utils::pair_hash> Shader::shader_cache;
 
-std::shared_ptr<Shader> Shader::create_shader(std::string vs_src, std::string fs_src) {
+std::shared_ptr<Shader> Shader::create(std::string vs_src, std::string fs_src) {
     auto cache = shader_cache.find({ vs_src, fs_src });
     if (cache != shader_cache.end()) {
         auto sp = cache->second.lock();

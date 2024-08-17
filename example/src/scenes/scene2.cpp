@@ -29,23 +29,23 @@ void Scene2::start() {
             })
             ->add_component<Components::Mesh>(Constants::cube)
             ->configure_component<Components::Mesh>([](auto m) -> void {
-                m->material = Material::create_material(
-                    Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/light_shader.fs.glsl"), {});
+                m->material = Material::create(
+                    Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/light_shader.fs.glsl"), {});
             })
     );
     scene_root->children.emplace_back(
         std::make_shared<GameObject>("cube")
             ->add_component<Components::Mesh>(Constants::cube)
             ->configure_component<Components::Mesh>([](auto m) -> void {
-                m->material = Material::create_material(
-                    Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/object_light_shaderv2.fs.glsl"), {
+                m->material = Material::create(
+                    Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/object_light_shaderv2.fs.glsl"), {
                         { "light.position",     glm::vec3(1.2f, 1.0f, 2.0f) },
                         { "light.ambient",      glm::vec3(0.2f, 0.2f, 0.2f) },
                         { "light.diffuse",      glm::vec3(0.5f, 0.5f, 0.5f) },
                         { "light.specular",     glm::vec3(1.0f, 1.0f, 1.0f) },
-                        { "material.diffuse",   SE::Texture::create_texture("../../../../example/resources/textures/container2.png") },
-                        { "material.specular",  SE::Texture::create_texture("../../../../example/resources/textures/container2_specular.png") },
-                        { "material.emission",  SE::Texture::create_texture("se://texture?color=000000") },
+                        { "material.diffuse",   SE::Texture::create("../../../../example/resources/textures/container2.png") },
+                        { "material.specular",  SE::Texture::create("../../../../example/resources/textures/container2_specular.png") },
+                        { "material.emission",  SE::Texture::create("se://texture?color=000000") },
                         { "material.shininess", 32.0f }
                     });
             })

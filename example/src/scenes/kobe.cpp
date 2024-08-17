@@ -8,6 +8,7 @@
 #include "sparrow_engine/shader.hpp"
 #include "sparrow_engine/texture.hpp"
 #include "sparrow_engine/behavior.hpp"
+#include "sparrow_engine/rendering_texture.hpp"
 
 #include "scripts/camera_movement.hpp"
 #include "scripts/transform_modification.hpp"
@@ -33,10 +34,10 @@ public:
     float delta_radian = 0.01f;
     glm::vec3 rotate_axis = glm::vec3(0.0f, 1.0f, 0.0f);
 
-    void update() override {
+    void post_update() override {
         auto parent = game_object.lock();
         parent->transform.rotation *= glm::angleAxis(delta_radian, rotate_axis);
-        SE::Behavior::update();
+        SE::Behavior::post_update();
     }
 };
 
@@ -88,11 +89,11 @@ void KobeScene::start() {
 
         obj->add_component<Mesh>(SE::Example::Constants::plane, SE::Example::Constants::plane_vertex_indices);
         obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-            m->material = SE::Material::create_material(
-                SE::Shader::create_shader(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
-                    { "material.diffuse",   SE::Texture::create_texture(RESOURCES("textures/container.jpg")) },
-                    { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
-                    { "material.emission",  SE::Texture::create_texture("se://texture?color=000000") },
+            m->material = SE::Material::create(
+                SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
+                    { "material.diffuse",   SE::Texture::create(RESOURCES("textures/container.jpg")) },
+                    { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                    { "material.emission",  SE::Texture::create("se://texture?color=000000") },
                     { "material.shininess", 1.0f }
                 });
         });
@@ -132,23 +133,37 @@ void KobeScene::start() {
 
             indicator->add_component<Mesh>(SE::Example::Constants::cube);
             indicator->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                m->material = SE::Material::create_material(
-                    SE::Shader::create_shader(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
-                        { "material.diffuse",   SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission",  SE::Texture::create_texture("se://texture?color=FFFFFF") },
+                m->material = SE::Material::create(
+                    SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
+                        { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
+                        { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission",  SE::Texture::create("se://texture?color=FFFFFF") },
                         { "material.shininess", 1.0f }
                     });
             });
         });
     });
 
+    auto rt = SE::RenderingTexture::create(500, 500);
+
     scene_root->add_child_object("Helicopter");
-    scene_root->configure_child_object([](auto obj) {
+    scene_root->configure_child_object([&rt](auto obj) {
         obj->transform.position = glm::vec3(0.0f, 1.2f, 0.0f);
         obj->transform.scale = glm::vec3(0.2f);
 
 //        obj->add_component<Scripts::TransformModification>();
+
+        obj->add_child_object("Front Camera");
+        obj->configure_child_object([&rt](std::shared_ptr<SE::GameObject> obj) {
+            obj->transform.position.z = -9.0f;
+
+//            obj->add_component<Scripts::TransformModification>();
+            obj->add_component<SE::Components::Camera>();
+            obj->configure_component<SE::Components::Camera>([&rt](std::shared_ptr<SE::Components::Camera> c) {
+                c->output = rt;
+                c->fov = 60.0f;
+            });
+        });
 
         SE::ModelLoader ml;
         ml.load_model(RESOURCES("models/helicopter/HelicopterBody.obj"));
@@ -158,12 +173,12 @@ void KobeScene::start() {
             obj->configure_component<Mesh>([&model](std::shared_ptr<Mesh> m) {
                 m->vertices = model.vertices;
                 m->vertex_indices = model.indices;
-                m->material = SE::Material::create_material(
-                    SE::Shader::create_shader(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")),
+                m->material = SE::Material::create(
+                    SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")),
                     {
-                        { "material.diffuse", SE::Texture::create_texture(model.texture_paths.diffuse[0]) },
-                        { "material.specular", SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission", SE::Texture::create_texture("se://texture?color=000000") },
+                        { "material.diffuse", SE::Texture::create(model.texture_paths.diffuse[0]) },
+                        { "material.specular", SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission", SE::Texture::create("se://texture?color=000000") },
                         { "material.shininess", 32.0f }
                     });
             });
@@ -182,12 +197,12 @@ void KobeScene::start() {
             obj->configure_component<Mesh>([&model](std::shared_ptr<Mesh> m) {
                 m->vertices = model.vertices;
                 m->vertex_indices = model.indices;
-                m->material = SE::Material::create_material(
-                    SE::Shader::create_shader(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")),
+                m->material = SE::Material::create(
+                    SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")),
                     {
-                        { "material.diffuse", SE::Texture::create_texture(model.texture_paths.diffuse[0]) },
-                        { "material.specular", SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission", SE::Texture::create_texture("se://texture?color=000000") },
+                        { "material.diffuse", SE::Texture::create(model.texture_paths.diffuse[0]) },
+                        { "material.specular", SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission", SE::Texture::create("se://texture?color=000000") },
                         { "material.shininess", 32.0f }
                     });
             });
@@ -210,12 +225,12 @@ void KobeScene::start() {
             obj->configure_component<Mesh>([&model](std::shared_ptr<Mesh> m) {
                 m->vertices = model.vertices;
                 m->vertex_indices = model.indices;
-                m->material = SE::Material::create_material(
-                    SE::Shader::create_shader(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")),
+                m->material = SE::Material::create(
+                    SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")),
                     {
-                        { "material.diffuse", SE::Texture::create_texture(model.texture_paths.diffuse[0]) },
-                        { "material.specular", SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission", SE::Texture::create_texture("se://texture?color=000000") },
+                        { "material.diffuse", SE::Texture::create(model.texture_paths.diffuse[0]) },
+                        { "material.specular", SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission", SE::Texture::create("se://texture?color=000000") },
                         { "material.shininess", 32.0f }
                     });
             });
@@ -243,7 +258,7 @@ void KobeScene::start() {
     });
 
     scene_root->add_child_object("Camera Pivot");
-    scene_root->configure_child_object([](std::shared_ptr<SE::GameObject> obj) {
+    scene_root->configure_child_object([&rt](std::shared_ptr<SE::GameObject> obj) {
         obj->transform.set_euler_angles(-11.0f, 0.0f, 0.0f);
 
         obj->add_component<Scripts::CameraMovement>(); // BAAAAAD! very bad! but i'm lazy
@@ -258,9 +273,28 @@ void KobeScene::start() {
             f->is_follow_z = true;
         });
 
+        obj->add_child_object("Front Display");
+        obj->configure_child_object([&rt](std::shared_ptr<SE::GameObject> obj) {
+            obj->transform.position = glm::vec3(-0.177f, -0.088f, 13.35f);
+            obj->transform.scale = glm::vec3(0.07f);
+
+//            obj->add_component<Scripts::TransformModification>();
+
+            obj->add_component<Mesh>(SE::Example::Constants::plane, SE::Example::Constants::plane_vertex_indices);
+            obj->configure_component<Mesh>([&rt](std::shared_ptr<Mesh> m) {
+                m->material = SE::Material::create(
+                    SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
+                        { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
+                        { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission",  rt },
+                        { "material.shininess", 1.0f }
+                    });
+            });
+        });
+
         obj->add_child_object("Camera Object");
         obj->configure_child_object([](std::shared_ptr<SE::GameObject> obj) {
-            obj->transform.position = glm::vec3(0.0f, 0.0f, glm::length(glm::vec3(0.0f, 17.5f, 29.0f) * 0.4f));
+            obj->transform.position = glm::vec3(0.0f, 0.0f, 13.5f);
 
             obj->add_component<SE::Components::Camera>();
             obj->configure_component<SE::Components::Camera>([](auto c) {
@@ -286,11 +320,11 @@ void KobeScene::start() {
 
             obj->add_component<Mesh>(SE::Example::Constants::plane, SE::Example::Constants::plane_vertex_indices);
             obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                m->material = SE::Material::create_material(
-                    SE::Shader::create_shader(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
-                        { "material.diffuse",   SE::Texture::create_texture(RESOURCES("textures/kobe.png")) },
-                        { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission",  SE::Texture::create_texture("se://texture?color=000000") },
+                m->material = SE::Material::create(
+                    SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
+                        { "material.diffuse",   SE::Texture::create(RESOURCES("textures/kobe.png")) },
+                        { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission",  SE::Texture::create("se://texture?color=000000") },
                         { "material.shininess", 1.0f }
                     });
             });

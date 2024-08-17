@@ -1,4 +1,5 @@
 #include "sparrow_engine/scene.hpp"
+#include "sparrow_engine/game_window.hpp"
 
 #include <ranges>
 
@@ -39,6 +40,28 @@ void Scene::update() {
 }
 
 void Scene::render() {
+    while (!rendering_texture_queue.empty()) {
+        auto sp = rendering_texture_queue.front();
+        rendering_texture_queue.pop();
+        Framebuffer::current_framebuffer = sp->framebuffer;
+        sp->framebuffer->use();
+        Pipeline::current = sp->framebuffer->pipeline;
+
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, sp->width, sp->height);
+
+        ITERATE_OVER_OBJECTS(pre_render());
+        ITERATE_OVER_OBJECTS(render());
+        ITERATE_OVER_OBJECTS(post_render());
+    }
+    auto dfb = GameWindow::GetCurrent()->default_framebuffer;
+    Framebuffer::current_framebuffer = dfb;
+    dfb->use();
+    Pipeline::current = dfb->pipeline;
+
+    glViewport(0, 0, GameWindow::GetCurrent()->width, GameWindow::GetCurrent()->height);
+
     ITERATE_OVER_OBJECTS(pre_render());
     ITERATE_OVER_OBJECTS(render());
     ITERATE_OVER_OBJECTS(post_render());

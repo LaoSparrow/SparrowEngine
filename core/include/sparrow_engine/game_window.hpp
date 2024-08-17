@@ -4,6 +4,7 @@
 #include "game_object.hpp"
 #include "input.hpp"
 #include "utils.hpp"
+#include "pipeline.hpp"
 
 #include <set>
 #include <functional>
@@ -38,7 +39,7 @@ namespace SE {
         ImGuiContext *imgui_context;
         std::function<void(GameWindow&)> on_draw_callback;
         int width, height;
-        glm::mat4 mat_projection, mat_view;
+        std::shared_ptr<Framebuffer> default_framebuffer;
         SE::Input input_system{};
 
         explicit GameWindow(const char *title = "OpenGL Window", int width = 800, int height = 600);

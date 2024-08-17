@@ -81,7 +81,7 @@ void Texture::use() {
 
 std::unordered_map<std::string, std::weak_ptr<Texture>> Texture::texture_cache;
 
-std::shared_ptr<Texture> Texture::create_texture(const std::string image_path) {
+std::shared_ptr<Texture> Texture::create(const std::string image_path) {
     auto cache = texture_cache.find(image_path);
     if (cache != texture_cache.end()) {
         auto sp = cache->second.lock();

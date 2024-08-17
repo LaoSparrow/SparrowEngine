@@ -3,9 +3,11 @@
 #include "game_object.hpp"
 #include "lighting.hpp"
 #include "utils.hpp"
+#include "rendering_texture.hpp"
 
 #include <memory>
 #include <stack>
+#include <queue>
 
 namespace SE {
 
@@ -23,6 +25,7 @@ namespace SE {
     public:
         std::shared_ptr<GameObject> scene_root = std::make_shared<GameObject>("Scene Root");
         std::shared_ptr<Lighting> lighting = std::make_shared<Lighting>();
+        std::queue<std::shared_ptr<RenderingTexture>> rendering_texture_queue{};
 
         void new_frame();
 

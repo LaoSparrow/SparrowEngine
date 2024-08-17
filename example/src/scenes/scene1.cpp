@@ -41,10 +41,10 @@ void Scene1::start() {
                 Constants::plane,
                 Constants::plane_vertex_indices)
             ->configure_component<Components::Mesh>([](auto m) {
-                m->material = Material::create_material(
-                    Shader::create_shader("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
-                        { "texture_0", Texture::create_texture("../../../../example/resources/textures/container.jpg") },
-                        { "texture_1", Texture::create_texture("../../../../example/resources/textures/awesomeface.png") }
+                m->material = Material::create(
+                    Shader::create("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
+                        { "texture_0", Texture::create("../../../../example/resources/textures/container.jpg") },
+                        { "texture_1", Texture::create("../../../../example/resources/textures/awesomeface.png") }
                     });
             })
     );
@@ -54,10 +54,10 @@ void Scene1::start() {
             ->add_component<Components::Mesh>(
                 Constants::cube)
             ->configure_component<Components::Mesh>([](auto m) {
-                m->material = Material::create_material(
-                    Shader::create_shader("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
-                        { "texture_0", Texture::create_texture("../../../../example/resources/textures/container.jpg") },
-                        { "texture_1", Texture::create_texture("../../../../example/resources/textures/awesomeface.png") }
+                m->material = Material::create(
+                    Shader::create("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
+                        { "texture_0", Texture::create("../../../../example/resources/textures/container.jpg") },
+                        { "texture_1", Texture::create("../../../../example/resources/textures/awesomeface.png") }
                     });
             })
 
@@ -69,10 +69,10 @@ void Scene1::start() {
                 obj->add_component<Mesh>(
                     Constants::cube);
                 obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                    m->material = Material::create_material(
-                        Shader::create_shader("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
-                            { "texture_0", Texture::create_texture("../../../../example/resources/textures/container.jpg") },
-                            { "texture_1", Texture::create_texture("../../../../example/resources/textures/awesomeface.png") }
+                    m->material = Material::create(
+                        Shader::create("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
+                            { "texture_0", Texture::create("../../../../example/resources/textures/container.jpg") },
+                            { "texture_1", Texture::create("../../../../example/resources/textures/awesomeface.png") }
                         });
                 });
             })

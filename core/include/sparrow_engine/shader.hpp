@@ -54,7 +54,7 @@ namespace SE {
         void set_mat4(const char *name, glm::mat4 &value);
 
         static std::unordered_map<std::pair<std::string, std::string>, std::weak_ptr<Shader>, SE::Utils::pair_hash> shader_cache; // {vertex_shader_path,fragment_shader_path} <-> shader
-        static std::shared_ptr<Shader> create_shader(std::string vs_src, std::string fs_src);
+        static std::shared_ptr<Shader> create(std::string vs_src, std::string fs_src);
     };
 
 }

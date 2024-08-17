@@ -46,11 +46,11 @@ void Scene4::start() {
 
             indicator->add_component<Mesh>(SE::Example::Constants::cube);
             indicator->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                m->material = SE::Material::create_material(
-                    SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                        { "material.diffuse",   SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission",  SE::Texture::create_texture("se://texture?color=FFFFFF") },
+                m->material = SE::Material::create(
+                    SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                        { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
+                        { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission",  SE::Texture::create("se://texture?color=FFFFFF") },
                         { "material.shininess", 1.0f }
                     });
             });
@@ -66,11 +66,11 @@ void Scene4::start() {
             obj->configure_component<Mesh>([&m](std::shared_ptr<Mesh> mc) {
                 mc->vertices = m.vertices;
                 mc->vertex_indices = m.indices;
-                mc->material = SE::Material::create_material(
-                    SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                        { "material.diffuse",   SE::Texture::create_texture(m.texture_paths.diffuse[0]) },
-                        { "material.specular",  SE::Texture::create_texture(m.texture_paths.specular[0]) },
-                        { "material.emission",  SE::Texture::create_texture("se://texture?color=000000") },
+                mc->material = SE::Material::create(
+                    SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                        { "material.diffuse",   SE::Texture::create(m.texture_paths.diffuse[0]) },
+                        { "material.specular",  SE::Texture::create(m.texture_paths.specular[0]) },
+                        { "material.emission",  SE::Texture::create("se://texture?color=000000") },
                         { "material.shininess", 1.0f }
                     });
             });
@@ -98,11 +98,11 @@ void Scene4::start() {
 //
 //                light_obj->add_component<Mesh>(SE::Example::Constants::cube);
 //                light_obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-//                    m->material = SE::Material::create_material(
-//                        SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-//                            { "material.diffuse", SE::Texture::create_texture("se://texture?color=000000") },
-//                            { "material.specular", SE::Texture::create_texture("se://texture?color=000000") },
-//                            { "material.emission", SE::Texture::create_texture("se://texture?color=FFFFFF") },
+//                    m->material = SE::Material::create(
+//                        SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+//                            { "material.diffuse", SE::Texture::create("se://texture?color=000000") },
+//                            { "material.specular", SE::Texture::create("se://texture?color=000000") },
+//                            { "material.emission", SE::Texture::create("se://texture?color=FFFFFF") },
 //                            { "material.shininess", 1.0f }
 //                        });
 //                });

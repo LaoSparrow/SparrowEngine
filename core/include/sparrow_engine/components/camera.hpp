@@ -6,6 +6,7 @@
 
 #include "glm/matrix.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "sparrow_engine/rendering_texture.hpp"
 
 namespace SE::Components {
 
@@ -18,6 +19,7 @@ namespace SE::Components {
 
         using SE::Behavior::Behavior;
 
+        std::shared_ptr<RenderingTexture> output = nullptr;
         CameraType type = CameraType::Perspective;
         float fov = 45.0f;
         float near = 0.1f;
@@ -26,7 +28,7 @@ namespace SE::Components {
         glm::mat4 mat_projection;
         glm::mat4 mat_view;
 
-        void update() override;
+        void post_update() override;
     };
 
 }

@@ -30,7 +30,7 @@ namespace SE::Components {
         float outer_cut_off{};
 
         void start() override;
-        void update() override;
+        void post_update() override;
 
         Lighting::LightData& get_light();
 

@@ -7,7 +7,7 @@ void Light::start() {
     data_slot = Scene::GetCurrent()->lighting->next_available_slot();
 }
 
-void Light::update() {
+void Light::post_update() {
     auto lighting = lighting_parent.lock();
     if (!lighting)
         return;
@@ -37,7 +37,7 @@ void Light::update() {
     data->outer_cut_off = outer_cut_off;
 
     lighting->push_data(data_slot);
-    Behavior::update();
+    Behavior::post_update();
 }
 
 Light::~Light() {

@@ -42,11 +42,11 @@ void Scene3::start() {
 
             indicator->add_component<Mesh>(SE::Example::Constants::cube);
             indicator->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                m->material = SE::Material::create_material(
-                    SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                        { "material.diffuse",   SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission",  SE::Texture::create_texture("se://texture?color=FFFFFF") },
+                m->material = SE::Material::create(
+                    SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                        { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
+                        { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission",  SE::Texture::create("se://texture?color=FFFFFF") },
                         { "material.shininess", 1.0f }
                     });
             });
@@ -60,11 +60,11 @@ void Scene3::start() {
 
         obj->add_component<Mesh>(SE::Example::Constants::cube);
         obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-            m->material = SE::Material::create_material(
-                SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                    { "material.diffuse",   SE::Texture::create_texture("se://texture?color=000000") },
-                    { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
-                    { "material.emission",  SE::Texture::create_texture("se://texture?color=FFFFFF") },
+            m->material = SE::Material::create(
+                SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                    { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
+                    { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                    { "material.emission",  SE::Texture::create("se://texture?color=FFFFFF") },
                     { "material.shininess", 1.0f }
                 });
         });
@@ -90,11 +90,11 @@ void Scene3::start() {
 
         obj->add_component<Mesh>(SE::Example::Constants::cube);
         obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-            m->material = SE::Material::create_material(
-                SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                    { "material.diffuse",   SE::Texture::create_texture("se://texture?color=000000") },
-                    { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
-                    { "material.emission",  SE::Texture::create_texture("se://texture?color=FF0000") },
+            m->material = SE::Material::create(
+                SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                    { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
+                    { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                    { "material.emission",  SE::Texture::create("se://texture?color=FF0000") },
                     { "material.shininess", 1.0f }
                 });
         });
@@ -130,11 +130,11 @@ void Scene3::start() {
         char name_buf[10];
         sprintf(name_buf, "Cube %d", i);
 
-        auto cube_material = SE::Material::create_material(
-            SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                { "material.diffuse",   SE::Texture::create_texture("../../../../example/resources/textures/container2.png") },
-                { "material.specular",  SE::Texture::create_texture("../../../../example/resources/textures/container2_specular.png") },
-                { "material.emission",  SE::Texture::create_texture("se://texture?color=000000") },
+        auto cube_material = SE::Material::create(
+            SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                { "material.diffuse",   SE::Texture::create("../../../../example/resources/textures/container2.png") },
+                { "material.specular",  SE::Texture::create("../../../../example/resources/textures/container2_specular.png") },
+                { "material.emission",  SE::Texture::create("se://texture?color=000000") },
                 { "material.shininess", 32.0f }
             });
 
@@ -169,11 +169,11 @@ void Scene3::start() {
 
             light_obj->add_component<Mesh>(SE::Example::Constants::cube);
             light_obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
-                m->material = SE::Material::create_material(
-                    SE::Shader::create_shader("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
-                        { "material.diffuse",   SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.specular",  SE::Texture::create_texture("se://texture?color=000000") },
-                        { "material.emission",  SE::Texture::create_texture("se://texture?color=FFFFFF") },
+                m->material = SE::Material::create(
+                    SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
+                        { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
+                        { "material.specular",  SE::Texture::create("se://texture?color=000000") },
+                        { "material.emission",  SE::Texture::create("se://texture?color=FFFFFF") },
                         { "material.shininess", 1.0f }
                     });
             });

@@ -14,6 +14,7 @@ namespace SE {
         GLuint id{0};
         std::string texture_path;
 
+        Texture() = default;
         ~Texture();
 
         void load(const std::string &res_url);
@@ -21,7 +22,7 @@ namespace SE {
         void use();
 
         static std::unordered_map<std::string, std::weak_ptr<Texture>> texture_cache; // image_path <-> texture
-        static std::shared_ptr<Texture> create_texture(std::string image_path);
+        static std::shared_ptr<Texture> create(std::string image_path);
     };
 
 }

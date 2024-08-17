@@ -21,7 +21,7 @@ namespace SE {
 
         void use();
 
-        static std::shared_ptr<Material> create_material(std::shared_ptr<Shader> shader, std::initializer_list<decltype(parameters)::value_type> init_list);
+        static std::shared_ptr<Material> create(std::shared_ptr<Shader> shader, std::initializer_list<decltype(parameters)::value_type> init_list);
     };
 
 }
