@@ -29,6 +29,7 @@ void Engine::RenderingLoop() {
                 w->bind_scene(Scene::next_scene);
                 Scene::next_scene = nullptr;
             }
+            Scene::current_scene = nullptr;
         }
 
         for (auto w : should_close_windows) {

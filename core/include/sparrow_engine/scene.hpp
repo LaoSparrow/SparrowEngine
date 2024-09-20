@@ -14,8 +14,8 @@ namespace SE {
     class Scene : public std::enable_shared_from_this<Scene> {
     private:
         SE::Utils::Lazy<> start_up {[this]() {
-            lighting->initialize();
-            start();
+            this->lighting->initialize();
+            this->start();
         }};
         std::stack<std::shared_ptr<GameObject>> obj_stack;
 

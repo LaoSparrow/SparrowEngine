@@ -59,7 +59,6 @@ namespace SE {
         static bool KeyReleaseTriggered(int key);
 
         friend class GameWindow;
-        friend class Input;
     };
 }
 

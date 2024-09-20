@@ -1,20 +1,22 @@
 add_rules("mode.debug", "mode.release")
 
 set_encodings("utf-8")
-if is_mode("release") then
-    set_runtimes("MT")
-else
-    set_runtimes("MTd")
+if is_plat("windows") then
+    if is_mode("release") then
+        set_runtimes("MT")
+    else
+        set_runtimes("MTd")
+    end
 end
 
 add_requires(
-        "vcpkg::glad >=0.1.36",
-        "vcpkg::glfw3 >=3.4",
-        "vcpkg::glm >=1.0.1",
-        "vcpkg::Stb 2023-04-11",
-        "vcpkg::imgui >=1.90.6",
-        "vcpkg::assimp >=5.4.0",
-        "vcpkg::fmt >=10.2.1", {debug = is_mode("debug")})
+        "vcpkg::glad",
+        "vcpkg::glfw3",
+        "vcpkg::glm",
+        "vcpkg::stb",
+        "vcpkg::imgui",
+        "vcpkg::assimp",
+        "vcpkg::fmt", {debug = is_mode("debug")})
 
 target("SparrowEngine")
     set_languages("c++20")

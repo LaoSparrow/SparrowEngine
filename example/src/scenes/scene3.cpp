@@ -25,15 +25,15 @@ void Scene3::start() {
     scene_root->configure_child_object([](auto obj) {
         obj->transform.set_euler_angles(100.0f, 10.0f, 0.0f);
 
-        obj->add_component<SE::Components::Light>();
-        obj->configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
+        obj->template add_component<SE::Components::Light>();
+        obj->template configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
             l->type = SE::Lighting::LightType::DirectionalLight;
 //                l->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
             l->diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
             l->specular = glm::vec3(1.0f, 1.0f, 1.0f);
         });
 
-        obj->add_component<Scripts::TransformModification>();
+        obj->template add_component<Scripts::TransformModification>();
 
         obj->add_child_object("Sun");
         obj->configure_child_object([](std::shared_ptr<SE::GameObject> indicator) {
@@ -58,8 +58,8 @@ void Scene3::start() {
         obj->transform.position = glm::vec3(0.0f, 0.0f, 4.0f);
         obj->transform.scale = glm::vec3(0.1f);
 
-        obj->add_component<Mesh>(SE::Example::Constants::cube);
-        obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
+        obj->template add_component<Mesh>(SE::Example::Constants::cube);
+        obj->template configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
             m->material = SE::Material::create(
                 SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
                     { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
@@ -69,8 +69,8 @@ void Scene3::start() {
                 });
         });
 
-        obj->add_component<SE::Components::Light>();
-        obj->configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
+        obj->template add_component<SE::Components::Light>();
+        obj->template configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
             l->type = SE::Lighting::LightType::PointLight;
 //                l->ambient = glm::vec3(0.2f, 0.2f, 0.2f);
             l->diffuse = glm::vec3(0.5f, 0.5f, 0.5f);
@@ -80,7 +80,7 @@ void Scene3::start() {
             l->quadratic = 0.032f;
         });
 
-        obj->add_component<Scripts::TransformModification>();
+        obj->template add_component<Scripts::TransformModification>();
     });
 
     scene_root->add_child_object("Point Light 2");
@@ -88,8 +88,8 @@ void Scene3::start() {
         obj->transform.position = glm::vec3(0.0f, 2.0f, -4.0f);
         obj->transform.scale = glm::vec3(0.1f);
 
-        obj->add_component<Mesh>(SE::Example::Constants::cube);
-        obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
+        obj->template add_component<Mesh>(SE::Example::Constants::cube);
+        obj->template configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
             m->material = SE::Material::create(
                 SE::Shader::create("../../../../example/resources/shaders/standard.vs.glsl", "../../../../example/resources/shaders/standard.fs.glsl"), {
                     { "material.diffuse",   SE::Texture::create("se://texture?color=000000") },
@@ -99,8 +99,8 @@ void Scene3::start() {
                 });
         });
 
-        obj->add_component<SE::Components::Light>();
-        obj->configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
+        obj->template add_component<SE::Components::Light>();
+        obj->template configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
             l->type = SE::Lighting::LightType::PointLight;
 //                l->ambient = glm::vec3(0.0f, 0.0f, 0.0f);
             l->diffuse = glm::vec3(0.5f, 0.0f, 0.0f);
@@ -110,7 +110,7 @@ void Scene3::start() {
             l->quadratic = 0.032f;
         });
 
-        obj->add_component<Scripts::TransformModification>();
+        obj->template add_component<Scripts::TransformModification>();
     });
 
     glm::vec3 cubePositions[] = {
@@ -143,8 +143,8 @@ void Scene3::start() {
             obj->transform.position = cubePositions[i];
             obj->transform.rotation = glm::angleAxis(glm::radians(20.0f * i), glm::normalize(glm::vec3(1.0f, 0.3f, 0.5f)));
 
-            obj->add_component<Mesh>(SE::Example::Constants::cube);
-            obj->configure_component<Mesh>([cube_material](std::shared_ptr<Mesh> m) {
+            obj->template add_component<Mesh>(SE::Example::Constants::cube);
+            obj->template configure_component<Mesh>([cube_material](std::shared_ptr<Mesh> m) {
                 m->material = cube_material;
             });
         });
@@ -154,10 +154,10 @@ void Scene3::start() {
     scene_root->configure_child_object([](auto obj) {
         obj->transform.position = glm::vec3(1.0f, 0.0f, 5.0f);
 
-        obj->add_component<Scripts::CameraMovement>();
+        obj->template add_component<Scripts::CameraMovement>();
 
-        obj->add_component<SE::Components::Camera>();
-        obj->configure_component<SE::Components::Camera>([](auto c) {
+        obj->template add_component<SE::Components::Camera>();
+        obj->template configure_component<SE::Components::Camera>([](auto c) {
             c->fov = 60.0f;
         });
 

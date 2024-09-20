@@ -31,8 +31,8 @@ void Scene4::start() {
     scene_root->configure_child_object([](auto obj) {
         obj->transform.set_euler_angles(100.0f, 10.0f, 0.0f);
 
-        obj->add_component<SE::Components::Light>();
-        obj->configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
+        obj->template add_component<SE::Components::Light>();
+        obj->template configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
             l->type = SE::Lighting::LightType::DirectionalLight;
             l->ambient = glm::vec3(0.3f, 0.3f, 0.3f);
             l->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -62,8 +62,8 @@ void Scene4::start() {
         SE::ModelLoader loader;
         loader.load_model("../../../../example/resources/models/backpack/backpack.obj", aiProcess_FlipUVs);
         for (const auto &m : loader.meshes) {
-            obj->add_component<Mesh>();
-            obj->configure_component<Mesh>([&m](std::shared_ptr<Mesh> mc) {
+            obj->template add_component<Mesh>();
+            obj->template configure_component<Mesh>([&m](std::shared_ptr<Mesh> mc) {
                 mc->vertices = m.vertices;
                 mc->vertex_indices = m.indices;
                 mc->material = SE::Material::create(
@@ -76,17 +76,17 @@ void Scene4::start() {
             });
         }
 
-        obj->add_component<Scripts::TransformModification>();
+        obj->template add_component<Scripts::TransformModification>();
     });
 
     scene_root->add_child_object("Camera Object");
     scene_root->configure_child_object([](auto obj) {
         obj->transform.position = glm::vec3(1.0f, 0.0f, 5.0f);
 
-        obj->add_component<Scripts::CameraMovement>();
+        obj->template add_component<Scripts::CameraMovement>();
 
-        obj->add_component<SE::Components::Camera>();
-        obj->configure_component<SE::Components::Camera>([](auto c) {
+        obj->template add_component<SE::Components::Camera>();
+        obj->template configure_component<SE::Components::Camera>([](auto c) {
             c->fov = 60.0f;
         });
 

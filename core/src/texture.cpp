@@ -13,7 +13,7 @@ Texture::~Texture() {
 void Texture::load(const std::string &res_url) {
     if (res_url.starts_with("se://texture?color=")) {
         unsigned char data[sizeof(unsigned int)];
-        sscanf_s(res_url.c_str(), "se://texture?color=%x", (unsigned int*)data);
+	std::sscanf(res_url.c_str(), "se://texture?color=%x", (unsigned int*)data);
         std::swap(data[0], data[2]);
 
         glGenTextures(1, &id);

@@ -65,10 +65,10 @@ void Scene1::start() {
             ->configure_child_object([](auto obj) {
                 obj->transform.position = glm::vec3(1.0f, 1.0f, 0.0f);
                 obj->transform.rotation *= glm::angleAxis(glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-                obj->add_component<Scripts::TransformModification>();
-                obj->add_component<Mesh>(
+                obj->template add_component<Scripts::TransformModification>();
+                obj->template add_component<Mesh>(
                     Constants::cube);
-                obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
+                obj->template configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
                     m->material = Material::create(
                         Shader::create("../../../../example/resources/shaders/transform_shader.vs.glsl", "../../../../example/resources/shaders/double_texture_shader.fs.glsl"), {
                             { "texture_0", Texture::create("../../../../example/resources/textures/container.jpg") },

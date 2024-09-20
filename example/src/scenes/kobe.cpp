@@ -87,8 +87,8 @@ void KobeScene::start() {
         obj->transform.scale = glm::vec3(10000.0f);
         obj->transform.set_euler_angles(90.0f, 0.0f, 0.0f);
 
-        obj->add_component<Mesh>(SE::Example::Constants::plane, SE::Example::Constants::plane_vertex_indices);
-        obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
+        obj->template add_component<Mesh>(SE::Example::Constants::plane, SE::Example::Constants::plane_vertex_indices);
+        obj->template configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
             m->material = SE::Material::create(
                 SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
                     { "material.diffuse",   SE::Texture::create(RESOURCES("textures/container.jpg")) },
@@ -110,16 +110,16 @@ void KobeScene::start() {
     scene_root->configure_child_object([](auto obj) {
         obj->transform.set_euler_angles(100.0f, 10.0f, 0.0f);
 
-        obj->add_component<SE::Components::Light>();
-        obj->configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
+        obj->template add_component<SE::Components::Light>();
+        obj->template configure_component<SE::Components::Light>([](std::shared_ptr<SE::Components::Light> l) {
             l->type = SE::Lighting::LightType::DirectionalLight;
             l->ambient = glm::vec3(0.7f, 0.7f, 0.7f);
             l->diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
             l->specular = glm::vec3(1.0f, 1.0f, 1.0f);
         });
 
-        obj->add_component<Follow>();
-        obj->configure_component<Follow>([](std::shared_ptr<Follow> f) {
+        obj->template add_component<Follow>();
+        obj->template configure_component<Follow>([](std::shared_ptr<Follow> f) {
             f->target_index = 2;
             f->is_follow_x = true;
             f->is_follow_y = true;
@@ -169,8 +169,8 @@ void KobeScene::start() {
         ml.load_model(RESOURCES("models/helicopter/HelicopterBody.obj"));
 
         for (auto const model : ml.meshes) {
-            obj->add_component<Mesh>();
-            obj->configure_component<Mesh>([&model](std::shared_ptr<Mesh> m) {
+            obj->template add_component<Mesh>();
+            obj->template configure_component<Mesh>([&model](std::shared_ptr<Mesh> m) {
                 m->vertices = model.vertices;
                 m->vertex_indices = model.indices;
                 m->material = SE::Material::create(
@@ -184,7 +184,7 @@ void KobeScene::start() {
             });
         }
 
-        obj->add_component<Scripts::HelicopterBehavior>();
+        obj->template add_component<Scripts::HelicopterBehavior>();
 
         obj->add_child_object("Propeller1");
         obj->configure_child_object([](std::shared_ptr<SE::GameObject> obj) {
@@ -318,8 +318,8 @@ void KobeScene::start() {
             obj->transform.scale = glm::vec3(100.0f);
             obj->transform.rotation = glm::angleAxis(0.1f * i, glm::vec3(0.0f, 1.0f, 0.0f));
 
-            obj->add_component<Mesh>(SE::Example::Constants::plane, SE::Example::Constants::plane_vertex_indices);
-            obj->configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
+            obj->template add_component<Mesh>(SE::Example::Constants::plane, SE::Example::Constants::plane_vertex_indices);
+            obj->template configure_component<Mesh>([](std::shared_ptr<Mesh> m) {
                 m->material = SE::Material::create(
                     SE::Shader::create(RESOURCES("shaders/standard.vs.glsl"), RESOURCES("shaders/standard.fs.glsl")), {
                         { "material.diffuse",   SE::Texture::create(RESOURCES("textures/kobe.png")) },
@@ -329,7 +329,7 @@ void KobeScene::start() {
                     });
             });
 
-            obj->add_component<RotateAnimation>();
+            obj->template add_component<RotateAnimation>();
         });
     }
     Scene::start();
