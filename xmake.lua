@@ -16,7 +16,13 @@ add_requires(
         "vcpkg::stb",
         "vcpkg::imgui",
         "vcpkg::assimp",
-        "vcpkg::fmt", {debug = is_mode("debug")})
+        "vcpkg::fmt",
+        {
+            configs = {
+                baseline = "98aa6396292d57e737a6ef999d4225ca488859d5"
+            },
+            debug = is_mode("debug")
+        })
 
 target("SparrowEngine")
     set_languages("c++20")
